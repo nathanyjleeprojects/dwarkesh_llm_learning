@@ -47,7 +47,7 @@ const GLOSSARY = {
   },
   "batch": {
     title: "Batch",
-    body: "이 맥락에서는 <strong>여러 사용자의 요청을 한 번의 forward pass 에 함께 묶어 처리하는 일</strong>. 가중치를 한 번 읽어 N 명에게 적용 → 토큰당 가중치 비용이 1/N 로 줄어듦. \"batch size\" = 동시에 처리하는 시퀀스 수."
+    body: "이 영상에서는 <strong>여러 사용자의 요청을 한 번의 forward pass 에 함께 묶어 처리하는 일</strong> 을 가리킴. 가중치를 한 번 읽어 N 명에게 적용 → 토큰당 가중치 비용이 1/N 로 줄어듦. \"batch size\" = 동시에 처리하는 시퀀스 수."
   },
   "batch size": {
     title: "Batch Size",
@@ -67,11 +67,11 @@ const GLOSSARY = {
   },
   "sparsity": {
     title: "Sparsity",
-    body: "MoE 에서 <code>total params / active params</code> 의 비율. DeepSeek 은 256/32 = 8. Dense 모델은 1. <strong>최적 batch ≈ 300 × sparsity</strong>."
+    body: "MoE 에서 <code>total params / active params</code> 의 비율. DeepSeek 은 256/32 = 8. Dense 모델은 sparsity 가 1. <strong>최적 batch ≈ 300 × sparsity</strong>."
   },
   "active params": {
     title: "Active Parameters",
-    body: "한 토큰을 처리할 때 실제로 통과하는 가중치의 개수. MoE 에서는 total 보다 훨씬 작음. 토큰당 추론 비용은 active 에 비례."
+    body: "한 토큰을 처리할 때 실제로 통과하는 가중치의 개수. MoE 에서는 total 보다 훨씬 작음. 토큰당 계산량은 active 에 비례."
   },
   "total params": {
     title: "Total Parameters",
@@ -97,7 +97,7 @@ const GLOSSARY = {
   },
   "memory bandwidth": {
     title: "Memory Bandwidth",
-    body: "GPU 코어가 HBM 에서 데이터를 끌어올 수 있는 속도 (TB/s). 추론은 이 대역폭에 자주 발목이 잡힘 — <strong>계산 자체보다 \"데이터 가져오기\" 가 더 느려서</strong>."
+    body: "GPU 코어가 HBM 에서 데이터를 끌어올 수 있는 속도 (TB/s). 추론은 이 대역폭에 자주 발목이 잡힘 — <strong>계산 자체보다 \"데이터 가져오기\" 가 더 느리기 때문</strong>."
   },
   "roofline": {
     title: "Roofline Model",
@@ -153,7 +153,7 @@ const GLOSSARY = {
   },
   "all-to-all": {
     title: "All-to-All Communication",
-    body: "모든 GPU 가 모든 다른 GPU 에게 데이터를 보내야 하는 통신 패턴. MoE 에서 \"각 토큰이 어떤 GPU 의 expert 로 갈지 미리 알 수 없기\" 때문에 필연적. 랙 안에서는 빠르지만 랙을 넘으면 매우 비쌈."
+    body: "모든 GPU 가 모든 다른 GPU 에게 데이터를 보내야 하는 통신 패턴. MoE 에서 \"각 토큰이 어떤 GPU 의 expert 로 갈지 미리 알 수 없기\" 때문에 피할 수 없음. 랙 안에서는 빠르지만 랙을 넘으면 매우 비쌈."
   },
   "expert parallelism": {
     title: "Expert Parallelism",
@@ -183,7 +183,7 @@ const GLOSSARY = {
   // ===== 추론 / 서빙 =====
   "prefill": {
     title: "Prefill",
-    body: "사용자가 보낸 prompt (예: 1 만 토큰) 를 한 번에 모델에 통과시켜 첫 출력 토큰을 만들 준비를 하는 단계. 모든 토큰이 <strong>동시에</strong> 처리되어 가중치 fetch 비용이 amortize 되므로, 토큰당 비용이 낮음."
+    body: "사용자가 보낸 prompt (예: 1만 토큰) 를 한 번에 모델에 통과시켜 첫 출력 토큰을 만들 준비를 하는 단계. 모든 토큰이 <strong>동시에</strong> 처리되어 가중치 fetch 비용이 amortize 되므로, 토큰당 비용이 낮음."
   },
   "decode": {
     title: "Decode",
@@ -221,7 +221,7 @@ const GLOSSARY = {
   },
   "over-training": {
     title: "Over-training",
-    body: "Chinchilla 권고치보다 훨씬 많은 토큰으로 학습하는 것. 학습 비용은 늘지만 모델 사이즈가 작게 유지되어 <strong>평생 추론 비용이 줄어듦</strong>. 추론 횟수가 많을수록 합리적."
+    body: "Chinchilla 권고치보다 훨씬 많은 토큰으로 학습하는 것. 학습 비용은 늘지만 모델 사이즈가 작게 유지되어 <strong>평생 추론 비용이 줄어듦</strong>. 추론 횟수가 많을수록 더 합리적이 됨."
   },
   "scaling laws": {
     title: "Scaling Laws",
@@ -253,7 +253,7 @@ const GLOSSARY = {
   },
   "balance point": {
     title: "Balance Point",
-    body: "두 비용 (예: 계산 시간과 메모리 시간) 이 같아지는 지점. 보통 그 근처에서 두 비용의 합이 최소가 되어 최적 운영점이 됨."
+    body: "두 비용 (예: 계산 시간과 메모리 시간) 이 같아지는 지점. 보통 그 근처에서 두 비용의 합이 최소가 되어 최적 운영점에 해당함."
   },
   "inflection point": {
     title: "Inflection Point",
@@ -261,7 +261,7 @@ const GLOSSARY = {
   },
   "FLOP utilization": {
     title: "FLOP Utilization",
-    body: "GPU 의 이론적인 최대 FLOP/s 중 실제 사용된 비율. 100% 면 \"compute bound\" 상태. 추론은 보통 30~50% 정도로 \"memory bound\" 상태에 머묾."
+    body: "GPU 의 이론적인 최대 FLOP/s 중 실제 사용된 비율. 100% 면 \"compute-bound\" 상태. 추론은 보통 30~50% 정도로 \"memory-bound\" 상태에 머묾."
   }
 };
 
