@@ -1,12 +1,14 @@
 # Dwarkesh × Reiner Pope: LLM 추론의 경제학
 
+**▶ 라이브 페이지: <https://nathanyjleeprojects.github.io/dwarkesh_llm_learning/>**
+
 **목적**: Dwarkesh Patel x Reiner Pope 인터뷰(`xmkSf5IS-zw`) "How GPT, Claude, and Gemini are actually trained and served" 의 모든 기술적 내용을 비전문가도 따라갈 수 있게 풀어낸 self-hosted 학습 페이지.
 
 이 영상은 LLM의 학습/서빙을 *물리법칙과 경제학*의 관점에서 다룹니다. 트랜스포머가 어떻게 작동하는지(예: attention 메커니즘의 디테일)가 아니라, **트랜스포머가 작동한다고 할 때 왜 회사들이 지금 같은 결정(batch size, MoE, pipeline 구조, 컨텍스트 길이, 가격)을 내리는가**가 주제입니다.
 
 ## 사용 방법
 
-`index.html`을 브라우저에서 열기. 다른 의존성 없음 (`file://`로도 동작).
+위 라이브 페이지 링크를 열거나, 로컬에서는 `index.html`을 브라우저에서 열기. 다른 의존성 없음 (`file://`로도 동작).
 
 ## 커리큘럼 설계
 
