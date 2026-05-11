@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dwarkesh × Reiner Pope: LLM 추론의 경제학</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d6e63'/%3E%3Ctext x='32' y='44' font-family='system-ui' font-weight='700' font-size='34' fill='white' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<!-- ========== TOP BAR ========== -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="#hero" class="brand">
+      <span class="accent">●</span> LLM 추론의 경제학
+      <span class="brand-sub">Dwarkesh × Reiner Pope</span>
+    </a>
+    <div class="progress-wrap"><div class="progress-bar"></div></div>
+    <button class="nav-toggle" aria-label="모듈 목록 열기">목차</button>
+  </div>
+</header>
+
+<!-- ========== SIDE NAV ========== -->
+<div class="nav-backdrop"></div>
+<aside class="module-nav">
+  <div class="nav-header">
+    <h3>학습 모듈</h3>
+    <button class="nav-close" aria-label="닫기">×</button>
+  </div>
+  <ul class="nav-list"></ul>
+</aside>
+
+<!-- ========== MAIN ========== -->
+<main>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="hero">
+    <h1>왜 GPT는 그 가격이고,<br>왜 컨텍스트는 200K 에서 멈춰 있을까<span class="accent">.</span></h1>
+    <p class="subtitle">
+      Dwarkesh Patel × Reiner Pope의 칠판 강의를 비전문가도 따라갈 수 있게 풀어낸 학습 페이지.<br>
+      끝나면 영상의 모든 줄을 이해하게 됩니다.
+    </p>
+    <div class="meta">
+      <span><span class="dot">●</span> 13 모듈</span>
+      <span><span class="dot">●</span> 약 45–60분</span>
+      <span><span class="dot">●</span> 모듈마다 이해 점검 퀴즈</span>
+      <span><span class="dot">●</span> 용어 hover 정의</span>
+    </div>
+    <a class="video-link" href="https://www.youtube.com/watch?v=xmkSf5IS-zw" target="_blank" rel="noopener">
+      ▶ 원 영상 (YouTube, 2시간)
+    </a>
+    <div class="cta">
+      <a href="#m0" class="btn">시작하기 ↓</a>
+    </div>
+  </section>
+
+  <!-- ============================================
+       MODULE 0 - Prologue
+       ============================================ -->
+  <section class="module" id="m0">
+    <span class="module-tag">00 · Prologue</span>
+    <h2>이 영상이 진짜 다루는 것</h2>
+    <p class="module-lede">
+      Reiner Pope는 2시간 동안 칠판 앞에서, 공개된 API 가격과 GPU 사양만 가지고
+      OpenAI/Anthropic/Google이 어떻게 모델을 학습하고 서빙하는지를 역추론합니다.
+      이 페이지가 끝나면 같은 일을 같이 할 수 있게 만드는 게 목표입니다.
+    </p>
+
+    <h3>등장 인물</h3>
+    <p>
+      <span class="term" data-term="Reiner Pope">Reiner Pope</span>는 LLM 전용 칩 스타트업 MatX의 CEO이자,
+      그 전에는 Google에서 <span class="term" data-term="TPU">TPU</span> 위에 LLM 서빙 인프라를 만든 사람입니다.
+      그러니까 이 영상은 <em>실제로 모델을 돌려본 사람</em>이 풀어내는 이야기입니다.
+    </p>
+    <p>
+      진행자는 <span class="term" data-term="Dwarkesh">Dwarkesh Patel</span>인데,
+      평소처럼 인터뷰 형식이 아니라 “칠판 강의” 포맷으로 진행됩니다. 본인이 학생이고, Reiner가 칠판 앞에서 수식을 쓰는 식.
+    </p>
+
+    <h3>이 영상이 <em>다루지 않는</em> 것</h3>
+    <p>
+      “트랜스포머가 어떻게 작동하는지”, “Attention 수식 디테일”, “GPT 학습 데이터셋”
+      같은 건 다루지 않습니다. 이 영상의 진짜 주제는 그 윗 층입니다:
+    </p>
+    <div class="callout insight">
+      <span class="callout-label">Thesis</span>
+      <p style="margin:0">
+        <strong>트랜스포머가 작동한다고 할 때, 왜 frontier lab들은 지금 같은 결정을 내리는가.</strong>
+        왜 컨텍스트가 200K에서 멈춰 있고, 왜 출력 토큰은 입력 토큰보다 5배 비싸고,
+        왜 Pipeline parallelism은 잘 안 쓰이고, 왜 한 모델이 Chinchilla 권고의 100배로 학습되는지.
+        이 모든 것이 <em>같은 물리법칙</em>에서 나옵니다.
+      </p>
+    </div>
+
+    <h3>당신이 끝나면 알게 될 것</h3>
+    <ul>
+      <li>왜 “<span class="term" data-term="batch">batch</span>”가 LLM 경제학의 모든 것인지</li>
+      <li>왜 한 숫자(<strong>≈300</strong>)가 모든 GPU 세대에 걸쳐 거의 안 변하는지</li>
+      <li>“<span class="term" data-term="MoE">Mixture of Experts</span>”가 정확히 어떻게 “큰 모델인데 추론은 작다”를 만드는지</li>
+      <li>왜 “<span class="term" data-term="rack">rack</span>” 한 대가 모든 분산 결정의 출발점인지</li>
+      <li>“<span class="term" data-term="KV cache">KV cache</span>” 가 무엇이고 왜 long context를 비싸게 만드는지</li>
+      <li>Gemini가 200K 토큰에서 가격을 올리는 이유에서 모델 구조까지 거꾸로 푸는 법</li>
+      <li>“100배 over-training”이 왜 사실은 합리적인지</li>
+    </ul>
+
+    <h3>사용법</h3>
+    <ul>
+      <li>위에서 아래로 읽으세요. 모듈은 순서대로 쌓입니다.</li>
+      <li>점선 밑줄이 있는 단어에 마우스 올리면 정의가 뜹니다 (모바일은 탭).</li>
+      <li>모듈 끝마다 짧은 점검 퀴즈가 있습니다. 틀려도 됩니다 — 풀이가 함께 나옵니다.</li>
+      <li>오른쪽 아래 ⚫ 글로서리 버튼으로 언제든 모든 용어를 검색할 수 있습니다.</li>
+      <li>맨 위 “목차”로 이동, 진행률 막대로 위치 확인.</li>
+    </ul>
+  </section>
+
+
+  <!-- ============================================
+       MODULE 1 - Foundations
+       ============================================ -->
+  <section class="module" id="module1">
+    <span class="module-tag">01 · 기초</span>
+    <h2>LLM 추론의 기본 풍경</h2>
+    <p class="module-lede">
+      본격 들어가기 전에, 영상 내내 등장할 단어들의 mental model을 잡습니다.
+      이미 익숙하다면 빠르게 훑고 넘어가셔도 됩니다.
+    </p>
+
+    <h3>LLM이 한 토큰을 만드는 한 사이클</h3>
+    <p>
+      <span class="term" data-term="LLM">LLM</span>은 결국 “지금까지의 토큰들을 보고 다음 토큰을 예측하는” 거대한 함수입니다.
+      이 함수를 한 번 실행하는 게 <span class="term" data-term="forward pass">forward pass</span>이고,
+      이게 바로 우리가 “<span class="term" data-term="추론">추론(inference)</span>”이라고 부르는 일입니다.
+    </p>
+
+    <p>한 forward에서 일어나는 일을 단순화하면 이렇습니다:</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="토큰 시퀀스가 모델 layer를 통과해 다음 토큰 분포를 만든다">
+        <!-- input tokens -->
+        <g transform="translate(20, 80)">
+          <rect width="120" height="60" rx="8" fill="#fff" stroke="#0d6e63" stroke-width="1.5"/>
+          <text x="60" y="28" text-anchor="middle" font-family="system-ui" font-size="12" fill="#1a1a1a" font-weight="600">입력 토큰들</text>
+          <text x="60" y="46" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#5a5a5a">[T1, T2, ..., Tn]</text>
+        </g>
+        <!-- arrow -->
+        <path d="M 145 110 L 195 110" stroke="#0d6e63" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+        <!-- model layers -->
+        <g transform="translate(200, 50)">
+          <rect width="240" height="120" rx="10" fill="#ecfdf5" stroke="#0d6e63" stroke-width="1.5"/>
+          <text x="120" y="22" text-anchor="middle" font-family="system-ui" font-size="11" fill="#0a534a" font-weight="700" letter-spacing="0.06em">MODEL (수십~수백 LAYERS)</text>
+          <g transform="translate(20, 35)">
+            <rect width="200" height="18" rx="4" fill="#fff" stroke="#0d6e63" stroke-width="0.8"/>
+            <text x="100" y="13" text-anchor="middle" font-family="system-ui" font-size="10" fill="#1a1a1a">attention + MLP layer</text>
+          </g>
+          <g transform="translate(20, 58)">
+            <rect width="200" height="18" rx="4" fill="#fff" stroke="#0d6e63" stroke-width="0.8"/>
+            <text x="100" y="13" text-anchor="middle" font-family="system-ui" font-size="10" fill="#1a1a1a">attention + MLP layer</text>
+          </g>
+          <text x="120" y="92" text-anchor="middle" font-family="system-ui" font-size="11" fill="#5a5a5a">⋮ (수십 번 반복)</text>
+        </g>
+        <!-- arrow -->
+        <path d="M 445 110 L 495 110" stroke="#0d6e63" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+        <!-- output -->
+        <g transform="translate(500, 80)">
+          <rect width="120" height="60" rx="8" fill="#fff" stroke="#c2410c" stroke-width="1.5"/>
+          <text x="60" y="28" text-anchor="middle" font-family="system-ui" font-size="12" fill="#1a1a1a" font-weight="600">다음 토큰</text>
+          <text x="60" y="46" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#5a5a5a">P(T_{n+1})</text>
+        </g>
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#0d6e63"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="diagram-caption">한 forward pass: 토큰 시퀀스가 모든 layer를 통과해 다음 토큰의 확률 분포를 만든다.</div>
+    </div>
+
+    <p>
+      각 layer 안에서는 <span class="term" data-term="가중치">가중치(weights)</span>라는,
+      학습으로 결정된 거대한 행렬들이 입력과 곱해집니다.
+      가중치는 <strong>모든 사용자가 공유</strong>합니다 — 누가 질문하든 같은 GPT-4 가중치가 쓰입니다.
+      이 사실이 곧 모듈 3에서 polynomial하게 중요해질 겁니다.
+    </p>
+
+    <h3>왜 GPU 인가</h3>
+    <p>
+      LLM의 거의 모든 계산은 “행렬 곱하기”입니다.
+      행렬 곱하기는 셀 하나하나가 다른 셀과 독립적으로 계산되니까,
+      병렬 처리가 천국처럼 잘 됩니다. <span class="term" data-term="GPU">GPU</span>는 정확히 그걸 잘하는 칩입니다.
+    </p>
+
+    <h3>두 가지 핵심 데이터: 가중치 vs KV cache</h3>
+    <p>
+      추론 시 GPU의 <span class="term" data-term="HBM">HBM</span>(고대역폭 메모리) 안에 머무는 두 가지 큰 데이터가 있습니다:
+    </p>
+    <ul>
+      <li><strong>가중치 (weights)</strong>: 학습으로 만들어진 고정된 숫자들. 사용자 모두가 공유.</li>
+      <li><strong><span class="term" data-term="KV cache">KV cache</span></strong>: 지금 진행 중인 대화의 “단기 기억”.
+        토큰마다 누적되며, <strong>사용자(시퀀스)마다 따로</strong>.</li>
+    </ul>
+    <p>
+      이 둘이 매 토큰마다 코어로 끌려 들어와야 합니다.
+      그래서 <strong>HBM에서 코어까지의 대역폭</strong>이 LLM 추론의 진짜 병목이 자주 됩니다.
+      (왜 그런지는 다음 모듈에서.)
+    </p>
+
+    <details class="details">
+      <summary>더 자세히: “forward pass” 안에서 정확히 일어나는 일</summary>
+      <div class="details-body">
+        <p>각 layer 안에서:</p>
+        <ol>
+          <li>입력 활성화 텐서를 <code>Q = X @ W_Q</code>, <code>K = X @ W_K</code>, <code>V = X @ W_V</code> 로 변환 (3개의 행렬곱)</li>
+          <li>K, V를 KV cache 에 append</li>
+          <li>Attention: <code>softmax(Q @ K^T / sqrt(d)) @ V</code></li>
+          <li>MLP: <code>up_projection</code> → 비선형 → <code>down_projection</code></li>
+          <li>잔차 연결로 입력에 더함 → 다음 layer로</li>
+        </ol>
+        <p>모든 단계가 GPU에서 행렬곱이고, 전부 가중치를 HBM에서 끌어옵니다.</p>
+      </div>
+    </details>
+
+    <div class="quiz" data-module="module1"></div>
+  </section>
+
+
+  <!-- ============================================
+       MODULE 2 - Two clocks
+       ============================================ -->
+  <section class="module" id="module2">
+    <span class="module-tag">02 · 핵심 직관</span>
+    <h2>두 개의 시계: 계산 시간과 메모리 시간</h2>
+    <p class="module-lede">
+      영상의 모든 결론은 한 가지 질문에서 출발합니다:
+      “GPU는 지금 계산을 기다리고 있나, 아니면 데이터를 기다리고 있나?”
+    </p>
+
+    <h3>한 토큰에 두 가지 활동</h3>
+    <p>
+      한 토큰을 만들 때 GPU는 두 가지 일을 합니다:
+    </p>
+    <ol>
+      <li><strong>계산하기 (compute)</strong> — 행렬곱과 덧셈. 단위는 <span class="term" data-term="FLOPs">FLOPs</span>.</li>
+      <li><strong>데이터 가져오기 (memory fetch)</strong> — HBM에서 가중치, KV cache를 코어로. 단위는 GB/s.</li>
+    </ol>
+    <p>
+      이 둘은 GPU 안에서 거의 병렬로 일어납니다 (계산하면서 다음 데이터를 미리 가져옴).
+      그래서 <strong>한 단계의 시간 = 둘 중 더 긴 쪽</strong>입니다.
+    </p>
+
+    <div class="equation">
+      <span class="label">법칙 ①</span>
+      t_step = max( t_compute,  t_memory )
+    </div>
+
+    <h3>두 시계가 어떻게 다른가</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="compute time과 memory time을 두 막대로 비교">
+        <text x="20" y="30" font-family="system-ui" font-size="12" fill="#5a5a5a" font-weight="600">시나리오 A (작은 batch): 메모리가 압도</text>
+        <rect x="20" y="40" width="80" height="20" fill="#e5e2d8"/>
+        <rect x="20" y="40" width="80" height="20" fill="#0d6e63"/>
+        <text x="105" y="55" font-family="system-ui" font-size="11" fill="#1a1a1a">계산</text>
+
+        <rect x="20" y="65" width="400" height="20" fill="#e5e2d8"/>
+        <rect x="20" y="65" width="400" height="20" fill="#c2410c"/>
+        <text x="425" y="80" font-family="system-ui" font-size="11" fill="#1a1a1a" font-weight="700">메모리 (병목 ⟵)</text>
+
+        <text x="20" y="120" font-family="system-ui" font-size="12" fill="#5a5a5a" font-weight="600">시나리오 B (충분한 batch): 둘이 비슷</text>
+        <rect x="20" y="130" width="380" height="20" fill="#e5e2d8"/>
+        <rect x="20" y="130" width="380" height="20" fill="#0d6e63"/>
+        <text x="405" y="145" font-family="system-ui" font-size="11" fill="#1a1a1a">계산</text>
+
+        <rect x="20" y="155" width="400" height="20" fill="#e5e2d8"/>
+        <rect x="20" y="155" width="400" height="20" fill="#c2410c"/>
+        <text x="425" y="170" font-family="system-ui" font-size="11" fill="#1a1a1a">메모리</text>
+      </svg>
+      <div class="diagram-caption">긴 쪽이 늘 병목. 짧은 쪽은 그 시간 동안 “놀고 있는” 셈.</div>
+    </div>
+
+    <h3>실제 숫자로 직관 잡기</h3>
+    <p>
+      Nvidia <span class="term" data-term="Blackwell">B100</span>의 사양을 봅시다:
+      약 <strong>4.5 PFLOP/s</strong> (4.5 × 10¹⁵ 연산/초), 메모리 대역폭 약 <strong>8 TB/s</strong>.
+    </p>
+    <p>
+      “1MB의 가중치를 가져와서 한 번 곱한다” 라는 작업을 생각해봅시다:
+    </p>
+    <ul>
+      <li>1MB 가져오는 시간: 1 / (8 × 10⁶ MB/s) = 125 나노초</li>
+      <li>1MB 가중치(≈1M개)로 1번씩 곱하기: 1M / 4.5e15 = 0.0002 나노초</li>
+    </ul>
+    <p>
+      <strong>메모리가 60만 배 느립니다.</strong>
+      이런 상황에서는 GPU 코어가 거의 매 순간 데이터를 기다립니다.
+      “가중치를 한 번 가져왔으면, 그걸로 더 많은 일을 시키자” 는 발상이 자연스러워지죠.
+    </p>
+
+    <div class="callout insight">
+      <span class="callout-label">한 줄 요약</span>
+      <p style="margin:0">
+        <span class="term" data-term="roofline">Roofline</span>: 어떤 작업이든 “피크 계산력”과 “데이터 전송 한계” 둘 중
+        더 작은 쪽에 묶입니다. LLM 추론은 자주 메모리에 묶이고, 다음 모듈에서 보겠지만,
+        <strong>그 묶임을 푸는 게 batch입니다.</strong>
+      </p>
+    </div>
+
+    <details class="details">
+      <summary>더 자세히: 왜 “둘 중 더 긴 쪽” 인가</summary>
+      <div class="details-body">
+        <p>
+          GPU는 “double buffered” 구조로 동작합니다. 한 데이터 청크를 계산하는 동안
+          다음 청크의 데이터를 미리 가져옵니다 (prefetch).
+          그래서 만약 매 청크에서 계산이 5ms 걸리고 데이터 가져오기가 8ms 걸리면,
+          전체 N개 청크 시간은 5+8+8+8+...+8 = 8N+5 ≈ 8N. 즉 <strong>긴 쪽 시간 × 청크 수</strong>로 수렴합니다.
+        </p>
+        <p>이게 “max(compute, memory)” 의 정확한 의미입니다.</p>
+      </div>
+    </details>
+
+    <div class="quiz" data-module="module2"></div>
+  </section>
+
+
+  <!-- ============================================
+       MODULE 3 - Batch
+       ============================================ -->
+  <section class="module" id="module3">
+    <span class="module-tag">03 · 본격 시작</span>
+    <h2>Batch 의 마법 — 1000배의 경제</h2>
+    <p class="module-lede">
+      Reiner는 영상의 첫 30분을 “batch” 하나에 씁니다. 그만큼 모든 게 여기서 나옵니다.
+      이 단어가 이 맥락에서 정확히 무엇인지부터 짚고 갑시다.
+    </p>
+
+    <h3>이 맥락에서 “batch” 란?</h3>
+    <p>
+      “Batch”는 컴퓨팅에서 굉장히 흔한 단어라 의미가 모호한데, <strong>이 영상에서의 정확한 뜻</strong>은 이렇습니다:
+    </p>
+    <div class="callout insight">
+      <span class="callout-label">정의</span>
+      <p style="margin:0">
+        <strong>Batch</strong> = 동시에 도착한 여러 사용자(또는 시퀀스)의 forward pass를 <em>한 번에 묶어서</em> 처리.
+        “Batch size 2,400” 이라면 “지금 ChatGPT에 동시에 질문 중인 2,400명을 한 forward로 같이 처리” 라는 뜻.
+      </p>
+    </div>
+
+    <h3>왜 묶으면 싸지나</h3>
+    <p>
+      모듈 1에서 말했듯이, <strong>가중치는 모든 사용자가 공유</strong>합니다.
+      그러니 GPU가 가중치를 HBM에서 한 번 끌어오면, 그 한 번의 fetch에 “2,400명의 토큰”을 같이 곱할 수 있습니다.
+      한 번의 fetch 비용을 N명에게 <span class="term" data-term="amortize">amortize</span> 하는 거죠.
+    </p>
+
+    <p>토큰 1개당 가중치 fetch 비용을 식으로 쓰면:</p>
+    <div class="equation">
+      <span class="label">법칙 ②</span>
+      가중치_비용_per_토큰  =  (가중치_fetch_시간)  /  batch_size
+    </div>
+    <p>
+      Batch size = 1 → 한 사람이 가중치 비용을 통째로 부담. <strong>토큰당 가격이 천문학적</strong>.<br>
+      Batch size = 1,000 → 천 명이 1/1000씩 나눠 부담. 거의 무시 가능.
+    </p>
+
+    <h3>비용 곡선의 모양</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="batch size에 따른 토큰당 비용 곡선">
+        <!-- axes -->
+        <line x1="50" y1="240" x2="560" y2="240" stroke="#1a1a1a" stroke-width="1"/>
+        <line x1="50" y1="20" x2="50" y2="240" stroke="#1a1a1a" stroke-width="1"/>
+        <text x="305" y="270" text-anchor="middle" font-family="system-ui" font-size="11" fill="#5a5a5a">batch size →</text>
+        <text x="20" y="130" font-family="system-ui" font-size="11" fill="#5a5a5a" transform="rotate(-90, 20, 130)">토큰당 비용 →</text>
+
+        <!-- curve: 1/x decay then floor -->
+        <path d="M 60 30 Q 90 50 120 90 T 200 180 T 350 215 L 540 215"
+              stroke="#0d6e63" stroke-width="2.5" fill="none"/>
+
+        <!-- floor -->
+        <line x1="50" y1="215" x2="560" y2="215" stroke="#c2410c" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="555" y="210" text-anchor="end" font-family="system-ui" font-size="10" fill="#c2410c">계산-한정 floor</text>
+
+        <!-- annotations -->
+        <text x="80" y="22" font-family="system-ui" font-size="11" fill="#0d6e63" font-weight="700">batch=1: 가중치 비용 압도</text>
+
+        <line x1="350" y1="200" x2="350" y2="240" stroke="#5a5a5a" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <text x="355" y="200" font-family="system-ui" font-size="10" fill="#5a5a5a">≈300 × sparsity</text>
+        <text x="355" y="212" font-family="system-ui" font-size="10" fill="#5a5a5a">(균형점)</text>
+
+        <!-- tail rise (KV cost) -->
+        <path d="M 540 215 Q 555 213 575 200" stroke="#c2410c" stroke-width="1.5" fill="none" stroke-dasharray="4,2"/>
+      </svg>
+      <div class="diagram-caption">
+        Batch가 작을 땐 가중치 비용이 쌍곡선으로 떨어지고, 어느 시점부터는 계산 floor에 부딪힘.
+        그 너머로 더 키우면 KV cache 메모리 부담이 다시 비용을 들어올림.
+      </div>
+    </div>
+
+    <p>
+      Reiner가 영상에서 “batching이 1,000배 차이를 만든다” 고 말하는 이유:
+      <strong>같은 GPU, 같은 모델인데 batch 정책이 다르면 토큰당 가격이 1000배 차이</strong>가 납니다.
+      그게 “ChatGPT 무료 vs API 호출당 $0.001” 같은 가격차의 본질입니다.
+    </p>
+
+    <h3>그럼 batch를 무한정 키울 수 있나?</h3>
+    <p>
+      아니요. <span class="term" data-term="KV cache">KV cache</span>는 사용자마다 따로입니다 (모듈 8에서 자세히).
+      Batch가 N이면 KV 메모리/대역폭도 N배. 어느 순간 “가중치 fetch”가 아니라 “KV fetch”가 병목이 되면서,
+      더 키워도 토큰당 비용이 안 떨어지고 오히려 올라가는 영역이 옵니다.
+    </p>
+
+    <p>그래서 “딱 좋은 batch size” 가 존재합니다. 다음 모듈에서 그 “딱 좋은” 지점이 어디인지 봅니다.</p>
+
+    <div class="quiz" data-module="module3"></div>
+  </section>
+
+
+  <!-- ============================================
+       MODULE 4 - The Number 300
+       ============================================ -->
+  <section class="module" id="module4">
+    <span class="module-tag">04 · 균형점</span>
+    <h2>마법의 숫자 300</h2>
+    <p class="module-lede">
+      어떤 칩 세대를 쓰든 한 숫자가 거의 안 변합니다. 이게 모든 batch 결정의 기준점입니다.
+    </p>
+
+    <h3>FLOPs / bandwidth 의 비율</h3>
+    <p>
+      모든 GPU의 데이터시트에는 두 숫자가 있습니다:
+      “초당 가능한 연산 횟수” (FLOP/s) 와 “초당 가져올 수 있는 데이터양” (B/s).
+      이 둘의 비율 — “1 byte를 가져오는 시간 동안 몇 번 곱셈을 할 수 있나” — 가 하드웨어의 성격을 결정합니다.
+    </p>
+
+    <div class="equation">
+      <span class="label">법칙 ③ — 마법의 숫자</span>
+      FLOPs / memory_bandwidth  ≈  300       (단위 없음)
+    </div>
+
+    <p>
+      재미있는 건 <strong>이 숫자가 GPU 세대가 바뀌어도 거의 안 변한다</strong>는 사실입니다:
+    </p>
+    <ul>
+      <li>A100 (2020): ≈ 300</li>
+      <li><span class="term" data-term="Hopper">H100</span> (2022): ≈ 290</li>
+      <li><span class="term" data-term="Blackwell">B100</span> (2024): ≈ 300</li>
+    </ul>
+    <p>
+      이유는 단순합니다: GPU 코어와 HBM은 <strong>같은 칩의 transistor와 면적과 전력을 두고 경쟁</strong>합니다.
+      한 쪽만 비대해지면 비용 효율이 무너지니까, 시장이 자연스럽게 비율을 유지하게 만듭니다.
+    </p>
+
+    <h3>이 숫자에서 “최적 batch size” 가 떨어진다</h3>
+    <p>
+      모듈 3의 “batch가 너무 작으면 가중치 비용이 압도”를 수식으로 쓰면:
+    </p>
+    <div class="equation">
+      <span class="label">균형 조건 (가중치 fetch ≈ 가중치 곱셈)</span>
+      total_params / bandwidth   =   batch × active_params / FLOPs
+    </div>
+    <p>
+      양변에 약간만 정리하면 (모델 항과 하드웨어 항을 분리):
+    </p>
+    <div class="equation">
+      FLOPs / bandwidth   =   batch × (active_params / total_params)
+      ⇒ <strong>batch_optimal  ≈  300 × (total_params / active_params)  =  300 × sparsity</strong>
+    </div>
+
+    <h3>실제 모델로 계산해보기</h3>
+    <p>
+      <span class="term" data-term="DeepSeek">DeepSeek</span>은 256개 expert 중 32개를 활성화. 즉
+      <span class="term" data-term="sparsity">sparsity</span> = 256/32 = 8.
+    </p>
+    <div class="equation">
+      batch_optimal  ≈  300 × 8  =  2,400 sequences
+    </div>
+    <p>
+      이게 frontier serving stack이 “수천명” batch에서 도는 이유입니다.
+      그리고 이 batch가 “warm” 한 동안만 가격이 좋습니다 — 그래서 회사들은
+      “20 ms 마다 한 batch 출발” 같은 시간표를 운영합니다 (HBM 한 번 비우는 데 ~15-20ms).
+    </p>
+
+    <div class="callout insight">
+      <span class="callout-label">왜 이게 강력한가</span>
+      <p style="margin:0">
+        “최적 batch” 가 active params, total params, layer 수, head 수 같은 모델 디테일을 거의 안 타고
+        “300 × sparsity” 한 줄로 끝납니다. 모델이 바뀌어도, GPU가 바뀌어도, 이 공식 하나면 됨.
+        Reiner가 영상에서 “공개된 sparsity만 알면 batch를 안다” 라고 자신 있게 말하는 이유입니다.
+      </p>
+    </div>
+
+    <details class="details">
+      <summary>더 자세히: 왜 “가중치 fetch ≈ 가중치 곱셈” 이 최적인가</summary>
+      <div class="details-body">
+        <p>
+          최대한 GPU가 안 놀게 하려면, 메모리가 데이터를 가져오는 동안 코어가 정확히 “이전 청크” 를 다 곱하고 있어야 합니다.
+          그러려면 “가져오는 시간 = 곱하는 시간”. 그게 균형점입니다.
+        </p>
+        <p>
+          이 점을 넘으면 코어가 일을 다 끝내고 다음 데이터를 기다리게 됩니다 (compute-bound).
+          이 점을 못 넘으면 데이터가 와도 코어가 못 따라잡습니다 (memory-bound).
+          “300 × sparsity” 가 바로 그 평형 위치입니다.
+        </p>
+      </div>
+    </details>
+
+    <div class="quiz" data-module="module4"></div>
+  </section>
+
+
+  <!-- ============================================
+       MODULE 5 - MoE
+       ============================================ -->
+  <section class="module" id="module5">
+    <span class="module-tag">05 · 아키텍처</span>
+    <h2>Mixture of Experts — 전문가 군단</h2>
+    <p class="module-lede">
+      GPT-4부터 frontier 모델의 표준. “sparsity” 라는 말이 영상 내내 등장하는 건 다 MoE 때문입니다.
+    </p>
+
+    <h3>Dense vs MoE</h3>
+    <p>
+      “Dense” 모델 (예: 옛날 GPT-3, LLaMA의 작은 버전들)은 <strong>모든 토큰이 모든 가중치를 통과</strong>합니다.
+      모델 크기가 커지면 토큰당 계산도 비례해 커지죠.
+    </p>
+    <p>
+      <span class="term" data-term="MoE">MoE</span>는 그 안에서 “이 토큰은 expert 7만 활성화, 저 토큰은 expert 23만” 처럼
+      <strong>가중치의 일부만 골라 쓰는</strong> 구조입니다.
+      한 layer에 expert가 256개 있으면, 한 토큰은 그 중 32개 정도만 통과하는 식.
+    </p>
+
+    <h3>한 MoE layer의 흐름</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MoE 한 layer: router → experts → reduce">
+        <!-- input -->
+        <g transform="translate(20, 100)">
+          <rect width="80" height="40" rx="6" fill="#fff" stroke="#1a1a1a" stroke-width="1"/>
+          <text x="40" y="25" text-anchor="middle" font-family="system-ui" font-size="11" fill="#1a1a1a">토큰 입력</text>
+        </g>
+        <path d="M 105 120 L 145 120" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+        <!-- router -->
+        <g transform="translate(150, 95)">
+          <rect width="80" height="50" rx="6" fill="#ecfdf5" stroke="#0d6e63" stroke-width="1.5"/>
+          <text x="40" y="22" text-anchor="middle" font-family="system-ui" font-size="11" fill="#0a534a" font-weight="700">Router</text>
+          <text x="40" y="38" text-anchor="middle" font-family="system-ui" font-size="9" fill="#5a5a5a">→ 어떤 expert?</text>
+        </g>
+
+        <!-- experts column -->
+        <g transform="translate(280, 30)">
+          <text x="55" y="-5" text-anchor="middle" font-family="system-ui" font-size="10" fill="#5a5a5a" font-weight="600">256 EXPERTS</text>
+          <!-- e1 dim -->
+          <rect x="0" y="0" width="110" height="22" rx="4" fill="#f5f3ec" stroke="#d6d3c4" stroke-width="0.8"/>
+          <text x="55" y="15" text-anchor="middle" font-family="system-ui" font-size="10" fill="#9e9e9e">expert 1</text>
+          <!-- e2 active -->
+          <rect x="0" y="28" width="110" height="22" rx="4" fill="#fff7ed" stroke="#c2410c" stroke-width="1.5"/>
+          <text x="55" y="43" text-anchor="middle" font-family="system-ui" font-size="10" fill="#1a1a1a" font-weight="700">expert 2 ⚡</text>
+          <!-- e3 dim -->
+          <rect x="0" y="56" width="110" height="22" rx="4" fill="#f5f3ec" stroke="#d6d3c4" stroke-width="0.8"/>
+          <text x="55" y="71" text-anchor="middle" font-family="system-ui" font-size="10" fill="#9e9e9e">expert 3</text>
+          <!-- ellipsis -->
+          <text x="55" y="92" text-anchor="middle" font-family="system-ui" font-size="11" fill="#5a5a5a">⋮</text>
+          <!-- e7 active -->
+          <rect x="0" y="100" width="110" height="22" rx="4" fill="#fff7ed" stroke="#c2410c" stroke-width="1.5"/>
+          <text x="55" y="115" text-anchor="middle" font-family="system-ui" font-size="10" fill="#1a1a1a" font-weight="700">expert 7 ⚡</text>
+          <!-- e8 dim -->
+          <rect x="0" y="128" width="110" height="22" rx="4" fill="#f5f3ec" stroke="#d6d3c4" stroke-width="0.8"/>
+          <text x="55" y="143" text-anchor="middle" font-family="system-ui" font-size="10" fill="#9e9e9e">expert 8</text>
+          <!-- ellipsis -->
+          <text x="55" y="165" text-anchor="middle" font-family="system-ui" font-size="11" fill="#5a5a5a">⋮ (256개까지)</text>
+        </g>
+
+        <!-- routing arrows -->
+        <path d="M 232 115 Q 250 70 280 60" stroke="#c2410c" stroke-width="1.5" fill="none" marker-end="url(#arrow3)"/>
+        <path d="M 232 125 Q 250 140 280 145" stroke="#c2410c" stroke-width="1.5" fill="none" marker-end="url(#arrow3)"/>
+
+        <!-- reduce -->
+        <g transform="translate(450, 95)">
+          <rect width="80" height="50" rx="6" fill="#ecfdf5" stroke="#0d6e63" stroke-width="1.5"/>
+          <text x="40" y="22" text-anchor="middle" font-family="system-ui" font-size="11" fill="#0a534a" font-weight="700">Reduce</text>
+          <text x="40" y="38" text-anchor="middle" font-family="system-ui" font-size="9" fill="#5a5a5a">결과 합치기</text>
+        </g>
+        <path d="M 395 60 Q 430 80 450 110" stroke="#c2410c" stroke-width="1.5" fill="none" marker-end="url(#arrow3)"/>
+        <path d="M 395 145 Q 430 130 450 130" stroke="#c2410c" stroke-width="1.5" fill="none" marker-end="url(#arrow3)"/>
+
+        <!-- output -->
+        <g transform="translate(580, 100)">
+          <rect width="100" height="40" rx="6" fill="#fff" stroke="#1a1a1a" stroke-width="1"/>
+          <text x="50" y="25" text-anchor="middle" font-family="system-ui" font-size="11" fill="#1a1a1a">다음 layer로</text>
+        </g>
+        <path d="M 535 120 L 575 120" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+        <defs>
+          <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a1a1a"/>
+          </marker>
+          <marker id="arrow3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#c2410c"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="diagram-caption">
+        Router가 토큰을 보고 “expert 2와 7로” 결정. 그 두 expert만 토큰을 처리. 결과를 합쳐 다음 layer로.
+      </div>
+    </div>
+
+    <h3>핵심 어휘 정리</h3>
+    <ul>
+      <li><strong><span class="term" data-term="router">Router</span></strong>: “이 토큰은 어떤 expert로?” 를 결정하는 작은 신경망. 학습으로 그 정책이 자동 결정.</li>
+      <li><strong><span class="term" data-term="expert">Expert</span></strong>: 작은 MLP. 한 layer에 보통 수십~수백 개.</li>
+      <li><strong><span class="term" data-term="active params">Active params</span></strong>: 한 토큰을 처리할 때 실제로 통과하는 가중치 수.</li>
+      <li><strong><span class="term" data-term="total params">Total params</span></strong>: 모델의 모든 expert 가중치 합. 메모리에는 다 들고 있어야.</li>
+      <li><strong><span class="term" data-term="sparsity">Sparsity</span></strong> = total / active. 클수록 “큰 모델인데 토큰당 작게” 가 강해짐.</li>
+    </ul>
+
+    <h3>왜 MoE 가 “큰 모델인데 추론은 작다” 인가</h3>
+    <p>
+      <strong>메모리 점유는 Total에 비례</strong>합니다 — 어떤 토큰이 어떤 expert로 갈지 미리 모르니까,
+      모든 expert를 GPU에 올려놓아야 함. 그래서 GPU 메모리가 큰 게 중요.
+    </p>
+    <p>
+      <strong>계산 비용은 Active에 비례</strong>합니다 — 한 토큰은 32개 expert만 통과하니까.
+      그래서 같은 quality 의 dense 모델보다 토큰당 계산이 적음.
+    </p>
+    <p>
+      이 “메모리 vs 계산의 분리” 가 모듈 4의 “batch = 300 × sparsity” 공식에 직접 들어옵니다.
+      Sparsity가 클수록 batch도 크게 돌려야 GPU가 안 놂.
+    </p>
+
+    <div class="quiz" data-module="module5"></div>
+  </section>
+
+
+  <!-- ============================================
+       MODULE 6 - GPU Racks
+       ============================================ -->
+  <section class="module" id="module6">
+    <span class="module-tag">06 · 하드웨어</span>
+    <h2>GPU 랙과 두 종류의 네트워크</h2>
+    <p class="module-lede">
+      “랙(rack) 안인가 밖인가” 가 모든 분산 결정의 출발점입니다. 이 한 줄을 이해하면 영상 후반의 절반을 따라갈 수 있습니다.
+    </p>
+
+    <h3>데이터센터의 단위들</h3>
+    <ul>
+      <li>GPU 한 대 (예: B100 1개, ~192 GB HBM)</li>
+      <li>트레이/노드 (예: <span class="term" data-term="Hopper">Hopper</span> 시대 8 GPU)</li>
+      <li><strong><span class="term" data-term="rack">랙(rack)</span></strong> — Blackwell 시대 64-72 GPU. 서버용 캐비닛 한 칸.</li>
+      <li>데이터센터 (수만 대 GPU)</li>
+    </ul>
+
+    <h3>두 종류의 네트워크</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="랙 안 NVLink와 랙 사이 ethernet">
+        <!-- rack 1 -->
+        <g transform="translate(40, 30)">
+          <rect width="220" height="220" rx="8" fill="#fff" stroke="#0d6e63" stroke-width="2"/>
+          <text x="110" y="22" text-anchor="middle" font-family="system-ui" font-size="12" fill="#0a534a" font-weight="700">RACK 0 (64-72 GPU)</text>
+          <!-- gpus grid -->
+          <g transform="translate(20, 35)">
+            <g><rect x="0" y="0" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/><text x="20" y="20" text-anchor="middle" font-family="system-ui" font-size="9" fill="#0a534a">GPU</text></g>
+            <g><rect x="50" y="0" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/><text x="70" y="20" text-anchor="middle" font-family="system-ui" font-size="9" fill="#0a534a">GPU</text></g>
+            <g><rect x="100" y="0" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/><text x="120" y="20" text-anchor="middle" font-family="system-ui" font-size="9" fill="#0a534a">GPU</text></g>
+            <g><rect x="150" y="0" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/><text x="170" y="20" text-anchor="middle" font-family="system-ui" font-size="9" fill="#0a534a">GPU</text></g>
+
+            <g><rect x="0" y="40" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/><text x="20" y="60" text-anchor="middle" font-family="system-ui" font-size="9" fill="#0a534a">GPU</text></g>
+            <g><rect x="50" y="40" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/><text x="70" y="60" text-anchor="middle" font-family="system-ui" font-size="9" fill="#0a534a">GPU</text></g>
+            <g><rect x="100" y="40" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/><text x="120" y="60" text-anchor="middle" font-family="system-ui" font-size="9" fill="#0a534a">GPU</text></g>
+            <g><rect x="150" y="40" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/><text x="170" y="60" text-anchor="middle" font-family="system-ui" font-size="9" fill="#0a534a">GPU</text></g>
+
+            <g><rect x="0" y="80" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/><text x="20" y="100" text-anchor="middle" font-family="system-ui" font-size="9" fill="#0a534a">GPU</text></g>
+            <g><rect x="50" y="80" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/><text x="70" y="100" text-anchor="middle" font-family="system-ui" font-size="9" fill="#0a534a">GPU</text></g>
+            <g><rect x="100" y="80" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/><text x="120" y="100" text-anchor="middle" font-family="system-ui" font-size="9" fill="#0a534a">GPU</text></g>
+            <g><rect x="150" y="80" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/><text x="170" y="100" text-anchor="middle" font-family="system-ui" font-size="9" fill="#0a534a">GPU</text></g>
+
+            <text x="95" y="135" text-anchor="middle" font-family="system-ui" font-size="10" fill="#0a534a" font-weight="600">⟷ NVLink (Scale-up) · 1× 빠름 ⟷</text>
+            <text x="95" y="150" text-anchor="middle" font-family="system-ui" font-size="9" fill="#5a5a5a">랙 안 GPU끼리 거의 “옆 메모리”처럼 통신</text>
+          </g>
+        </g>
+
+        <!-- rack 2 -->
+        <g transform="translate(440, 30)">
+          <rect width="220" height="220" rx="8" fill="#fff" stroke="#0d6e63" stroke-width="2"/>
+          <text x="110" y="22" text-anchor="middle" font-family="system-ui" font-size="12" fill="#0a534a" font-weight="700">RACK 1</text>
+          <g transform="translate(20, 35)">
+            <g><rect x="0" y="0" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/></g>
+            <g><rect x="50" y="0" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/></g>
+            <g><rect x="100" y="0" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/></g>
+            <g><rect x="150" y="0" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/></g>
+            <g><rect x="0" y="40" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/></g>
+            <g><rect x="50" y="40" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/></g>
+            <g><rect x="100" y="40" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/></g>
+            <g><rect x="150" y="40" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/></g>
+            <g><rect x="0" y="80" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/></g>
+            <g><rect x="50" y="80" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/></g>
+            <g><rect x="100" y="80" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/></g>
+            <g><rect x="150" y="80" width="40" height="30" rx="3" fill="#ecfdf5" stroke="#0d6e63"/></g>
+            <text x="95" y="135" text-anchor="middle" font-family="system-ui" font-size="10" fill="#0a534a" font-weight="600">NVLink (안)</text>
+          </g>
+        </g>
+
+        <!-- inter-rack ethernet -->
+        <path d="M 260 140 L 440 140" stroke="#c2410c" stroke-width="2" stroke-dasharray="6,4"/>
+        <text x="350" y="130" text-anchor="middle" font-family="system-ui" font-size="11" fill="#c2410c" font-weight="700">Ethernet (Scale-out)</text>
+        <text x="350" y="158" text-anchor="middle" font-family="system-ui" font-size="10" fill="#c2410c">~1/8 배 느림</text>
+      </svg>
+      <div class="diagram-caption">
+        같은 랙 안의 GPU끼리는 NVLink로 빠르게 통신, 랙을 넘으면 데이터센터 이더넷으로 ~8배 떨어짐.
+      </div>
+    </div>
+
+    <ul>
+      <li>
+        <strong><span class="term" data-term="scale-up">Scale-up</span></strong>: 랙 <em>안</em>의 NVLink.
+        “기본 1배” 의 빠른 통신.
+      </li>
+      <li>
+        <strong><span class="term" data-term="scale-out">Scale-out</span></strong>: 랙 <em>사이</em> 의 데이터센터 이더넷.
+        ~8배 느림. 만나러 가는 데 비용이 큼.
+      </li>
+    </ul>
+
+    <h3>왜 한 랙에 GPU를 더 못 넣나</h3>
+    <p>한 랙 크기를 결정하는 물리적 한계들 (가장 빡빡한 게 마지막):</p>
+    <ul>
+      <li>전력 공급 (랙당 100kW+)</li>
+      <li>구조적 무게 / 내장 강철</li>
+      <li>냉각 (액체 냉각 필요)</li>
+      <li><strong>케이블 밀도와 backplane 연결자 핀 밀도</strong> ← 진짜 한계</li>
+    </ul>
+
+    <h3>세대별 “한 scale-up 도메인” 크기 변화</h3>
+    <ul>
+      <li><span class="term" data-term="Hopper">Hopper</span> (2022): 트레이 한 칸 = 8 GPU</li>
+      <li><span class="term" data-term="Blackwell">Blackwell</span> (2024): 랙 한 칸 = 64-72 GPU</li>
+      <li><span class="term" data-term="Rubin">Rubin</span> (예정): ~500 GPU. 케이블 밀도 4배 향상의 결과</li>
+    </ul>
+    <p>
+      Hopper → Blackwell의 “8 → 72” 는 사실 폼팩터(트레이 → 랙)을 바꾼 게 큽니다.
+      Blackwell → Rubin의 “72 → 500” 이 진짜 케이블 밀도의 기술적 진보. “4배 한 것은 케이블이지 transistor가 아니다”.
+    </p>
+
+    <div class="callout insight">
+      <span class="callout-label">왜 이 한 줄이 중요한가</span>
+      <p style="margin:0">
+        “모델이 한 scale-up 도메인 안에 다 들어가는가?”
+        — 이 질문이 모델 분산의 모든 것을 결정합니다.
+        들어가면 빠른 NVLink만 쓰면 됨. 안 들어가면 다음 모듈(pipeline)이 필요.
+      </p>
+    </div>
+
+    <div class="quiz" data-module="module6"></div>
+  </section>
+
+
+  <!-- ============================================
+       MODULE 7 - Pipeline parallelism
+       ============================================ -->
+  <section class="module" id="module7">
+    <span class="module-tag">07 · 분산</span>
+    <h2>Pipeline Parallelism — 레이어를 나누는 법</h2>
+    <p class="module-lede">
+      한 랙에 모델이 다 안 들어가면? Layer를 잘라 여러 랙에 나눠 담는 게 가장 자연스러운 답입니다.
+    </p>
+
+    <h3>기본 아이디어</h3>
+    <p>
+      모델이 100 layer라면:
+    </p>
+    <ul>
+      <li>Rack 0: layer 0–24</li>
+      <li>Rack 1: layer 25–49</li>
+      <li>Rack 2: layer 50–74</li>
+      <li>Rack 3: layer 75–99</li>
+    </ul>
+    <p>
+      토큰 시퀀스가 rack 0의 layer 0–24를 통과하면, 그 결과(“활성화 텐서”)를 rack 1로 보냄.
+      Rack 1이 layer 25–49 처리, 다음 rack으로 넘김. 공장 컨베이어처럼.
+      이게 <span class="term" data-term="pipeline parallelism">pipeline parallelism</span>입니다.
+    </p>
+
+    <h3>그런데 “랙 사이는 8배 느림” 이라며?</h3>
+    <p>
+      맞습니다. 그래서 <em>랙 사이로 넘기는 데이터양</em> vs <em>랙 안에서 도는 데이터양</em>의 비율이 중요해집니다.
+      랙 안에서 충분히 많이 일하고 가끔만 옆 랙으로 넘긴다면, 그 “가끔” 의 비싼 비용이 잘 가려집니다.
+    </p>
+
+    <p>MoE와 결합한 경우 부등식이 이렇게 나옵니다:</p>
+    <div class="equation">
+      <span class="label">손해 보지 않는 조건</span>
+      8 × (활성_expert 수) × (한 stage의 layer 수)   ≥   8
+    </div>
+    <p>
+      좌변의 “8” 은 “scale-out이 1/8 배 느림” 보정. 우변의 “8” 은 “all-to-all” 통신의 보수적 잡설들.
+      DeepSeek (활성 expert 8) × 8 layer per stage = 64 → 64 ≥ 8 → 통과.
+      “한 랙이 한 layer” 같은 분배도 충분히 만족합니다.
+    </p>
+
+    <h3>예쁜 결과: “한 랙 = 한 layer”</h3>
+    <p>
+      이 부등식이 워낙 여유롭게 만족돼서, 실제 frontier serving stack에서는
+      <strong>레이어 경계와 랙 경계가 자연스럽게 일치</strong>합니다.
+      모델 아키텍처가 곧 데이터센터 배치를 결정하는 것이죠.
+      Reiner의 표현을 빌리면 “cutting matches the model architecture”.
+    </p>
+
+    <div class="callout insight">
+      <span class="callout-label">하지만</span>
+      <p style="margin:0">
+        “이게 가능하다” 와 “이게 좋은 선택이다” 는 다른 이야기.
+        모듈 9에서 “Pipelining is not wise” 의 진짜 의미를 파헤칩니다.
+      </p>
+    </div>
+
+    <div class="quiz" data-module="module7"></div>
+  </section>
+
+
+  <!-- ============================================
+       MODULE 8 - KV cache
+       ============================================ -->
+  <section class="module" id="module8">
+    <span class="module-tag">08 · 핵심 개념</span>
+    <h2>KV Cache — 모델의 단기 기억</h2>
+    <p class="module-lede">
+      영상에서 가장 자주 등장하는 단어. “메모리는 결국 KV cache 때문에 비싸진다”.
+      이 모듈을 끝내면 long context 가격, prompt caching, pipeline 한계가 모두 같은 그림으로 묶입니다.
+    </p>
+
+    <h3>왜 “기억” 이 필요한가</h3>
+    <p>
+      <span class="term" data-term="attention">Self-attention</span>은 새 토큰을 만들 때
+      “이전 모든 토큰들과 얼마나 관련 있나” 를 계산해야 합니다.
+      구체적으로는 새 토큰의 “쿼리(Q)” 가 이전 토큰들의 “키(K)” 와 내적되고,
+      그 가중치로 “값(V)” 들을 합칩니다.
+    </p>
+    <p>
+      만약 매 토큰마다 prompt 전체를 다시 forward 해서 K, V 를 다시 계산하면,
+      N번째 토큰을 만드는 데 N개 토큰을 처리해야 → 전체 비용이 O(N²)로 폭발합니다.
+    </p>
+
+    <h3>해결책: 캐시</h3>
+    <p>
+      이미 본 토큰의 K와 V는 한 번 계산한 뒤 <span class="term" data-term="HBM">HBM</span>에 저장합니다.
+      새 토큰은 자기 K, V만 계산해서 캐시에 추가하고, 캐시된 것들과 내적만 하면 됩니다.
+      이게 <span class="term" data-term="KV cache">KV cache</span>.
+    </p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="KV cache 누적">
+        <text x="20" y="20" font-family="system-ui" font-size="12" fill="#5a5a5a" font-weight="600">한 사용자의 KV cache (시퀀스가 진행될수록 누적)</text>
+        <g transform="translate(20, 40)">
+          <!-- bar segments -->
+          <rect x="0" y="0" width="40" height="40" fill="#ccfbf1" stroke="#0d6e63" stroke-width="0.8"/>
+          <text x="20" y="25" text-anchor="middle" font-family="system-ui" font-size="10" fill="#0a534a">T1</text>
+          <rect x="40" y="0" width="40" height="40" fill="#ccfbf1" stroke="#0d6e63" stroke-width="0.8"/>
+          <text x="60" y="25" text-anchor="middle" font-family="system-ui" font-size="10" fill="#0a534a">T2</text>
+          <rect x="80" y="0" width="40" height="40" fill="#ccfbf1" stroke="#0d6e63" stroke-width="0.8"/>
+          <text x="100" y="25" text-anchor="middle" font-family="system-ui" font-size="10" fill="#0a534a">T3</text>
+          <rect x="120" y="0" width="40" height="40" fill="#ccfbf1" stroke="#0d6e63" stroke-width="0.8"/>
+          <text x="140" y="25" text-anchor="middle" font-family="system-ui" font-size="10" fill="#0a534a">T4</text>
+          <rect x="160" y="0" width="40" height="40" fill="#fff7ed" stroke="#c2410c" stroke-width="1.5"/>
+          <text x="180" y="25" text-anchor="middle" font-family="system-ui" font-size="10" fill="#c2410c" font-weight="700">T5 (now)</text>
+          <text x="220" y="25" font-family="system-ui" font-size="11" fill="#5a5a5a">⋯ T200,000</text>
+        </g>
+        <text x="20" y="110" font-family="system-ui" font-size="11" fill="#1a1a1a">매 토큰마다:</text>
+        <text x="40" y="128" font-family="system-ui" font-size="11" fill="#1a1a1a">• 자기 K, V 계산 → HBM에 추가 (≈ 2KB / 토큰)</text>
+        <text x="40" y="148" font-family="system-ui" font-size="11" fill="#1a1a1a">• 그 위 모든 K, V 와 내적 (HBM 에서 fetch)</text>
+        <text x="20" y="178" font-family="system-ui" font-size="11" fill="#c2410c" font-weight="700">→ 컨텍스트 200K 면 한 사용자 KV: ≈ 400 MB</text>
+      </svg>
+      <div class="diagram-caption">시퀀스가 길어질수록 KV cache 가 누적. 사용자마다 따로.</div>
+    </div>
+
+    <h3>크기 공식</h3>
+    <div class="equation">
+      <span class="label">법칙 ④</span>
+      bytes_per_token   =   2 × layers × d_head × num_KV_heads
+    </div>
+    <ul>
+      <li><strong>2</strong>: K와 V 둘 다 저장</li>
+      <li><strong>layers</strong>: 모델의 모든 attention layer</li>
+      <li><strong>d_head × num_KV_heads</strong>: 각 layer의 head 차원 합</li>
+    </ul>
+    <p>
+      현재 frontier 모델 기준으로 대략 <strong>~2 KB / 토큰</strong> 가 “상식적” 인 값.
+      이 숫자가 모듈 11에서 Gemini 가격을 거꾸로 푸는 데 등장합니다.
+    </p>
+
+    <h3>왜 이게 모든 걸 결정하나</h3>
+    <p>
+      Batch가 N명이면 KV cache 도 N배. 한 사용자 400MB → 1,000 사용자 = 400 GB.
+      한 GPU의 HBM (~192 GB) 에 안 들어감. 그래서 분산이 필요하고,
+      그 분산은 다음 모듈에서 보겠지만 <strong>pipeline으로는 해결되지 않습니다</strong>.
+    </p>
+
+    <details class="details">
+      <summary>더 자세히: 왜 K와 V는 캐시하고 Q는 안 하나</summary>
+      <div class="details-body">
+        <p>
+          새 토큰을 만들 때, “새 토큰의 쿼리” 가 “이전 모든 토큰의 키” 와 내적합니다.
+          쿼리는 “이번 토큰” 만의 것이라 캐시할 필요가 없습니다 (한 번 쓰고 끝).
+          반대로 K와 V는 “이전 토큰들” 의 정보를 미래에도 계속 참조하니 저장 가치가 있는 거죠.
+        </p>
+      </div>
+    </details>
+
+    <div class="quiz" data-module="module8"></div>
+  </section>
+
+
+  <!-- ============================================
+       MODULE 9 - Pipelining is not wise
+       ============================================ -->
+  <section class="module" id="module9">
+    <span class="module-tag">09 · 미묘함</span>
+    <h2>“Pipelining is not wise” 의 진짜 의미</h2>
+    <p class="module-lede">
+      <span class="term" data-term="Ilya">Ilya Sutskever</span> 의 유명한 한 마디.
+      Reiner는 이걸 수식으로 풀어 보여줍니다.
+    </p>
+
+    <h3>학습에서의 명백한 문제: pipeline bubble</h3>
+    <p>
+      학습은 forward 다음에 backward가 따라옵니다. Pipeline 단계가 4개라면:
+    </p>
+    <ul>
+      <li>Stage 0가 “micro-batch 1” 의 forward를 끝내고 stage 1로 넘김</li>
+      <li>Stage 0가 “micro-batch 1” 의 backward를 받으려면 모든 stage가 forward를 끝내야</li>
+      <li>그 사이 stage 0이 잠깐 노는 “<span class="term" data-term="pipeline bubble">bubble</span>” 이 생김</li>
+    </ul>
+    <p>
+      <span class="term" data-term="micro-batch">micro-batch</span>를 잘게 쪼개고 일부 영리한 스케줄링으로 줄일 수는 있지만,
+      완전히 없애기는 어렵습니다.
+      이 “idle 시간” 이 바로 학습에서 pipeline이 비싼 이유 중 하나.
+    </p>
+
+    <h3>그럼 추론에서는?</h3>
+    <p>
+      추론은 backward가 없으니 bubble이 없습니다. 그러면 pipeline이 깔끔할까?
+      Reiner는 4가지 차원에서 따져봅니다:
+    </p>
+
+    <table style="width:100%; border-collapse: collapse; margin: 18px 0; font-size: 15px;">
+      <thead>
+        <tr style="background: var(--accent-soft); text-align: left;">
+          <th style="padding: 10px; border-bottom: 2px solid var(--accent);">차원</th>
+          <th style="padding: 10px; border-bottom: 2px solid var(--accent);">Pipeline 효과</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding:10px; border-bottom:1px solid var(--border);">Latency (한 토큰 시간)</td>
+            <td style="padding:10px; border-bottom:1px solid var(--border);">변화 없음. 어차피 모든 layer를 순서대로 통과 (오히려 hop 지연 추가).</td></tr>
+        <tr><td style="padding:10px; border-bottom:1px solid var(--border);">Compute (총 FLOPs)</td>
+            <td style="padding:10px; border-bottom:1px solid var(--border);">변화 없음.</td></tr>
+        <tr><td style="padding:10px; border-bottom:1px solid var(--border);">Weight 메모리 용량</td>
+            <td style="padding:10px; border-bottom:1px solid var(--border); color: var(--good); font-weight:600;">↓ 1/P 만큼 줄어듦. (P단계로 나눴으니)</td></tr>
+        <tr><td style="padding:10px;">KV cache 메모리/대역폭</td>
+            <td style="padding:10px; color: var(--bad); font-weight:600;">변화 없음 ← 결정타.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>왜 KV cache는 P 효과를 못 받나</h3>
+    <p>
+      P 단계로 나누면 GPU 수가 P배. “가중치는 1/P” 가 분명. 그런데 KV는...?
+    </p>
+    <p>
+      “늘어난 GPU를 다 채우려면 batch도 P배 늘려야 한다” 는 게 핵심입니다.
+      안 그러면 추가 GPU가 놀고 있어서 의미가 없으니까요.
+    </p>
+    <div class="equation">
+      <span class="label">GPU 한 대당 KV cache 양</span>
+      KV_per_GPU   =   (B × P × context × bytes_per_token)  /  (E × P)
+                    =   B × context × bytes_per_token  /  E
+    </div>
+    <p>
+      <strong>P가 분자, 분모에서 약분되어 사라집니다.</strong> 분명히 더 많은 GPU에 펼쳤는데,
+      각 GPU가 떠받쳐야 하는 KV cache 양은 그대로. 메모리 대역폭 압박도 그대로.
+    </p>
+
+    <div class="callout warning">
+      <span class="callout-label">결정타</span>
+      <p style="margin:0">
+        Pipeline은 “가중치 메모리 용량” 만 풀어줍니다.
+        하지만 frontier serving의 진짜 압박은 가중치 용량이 아니라 <strong>KV cache 대역폭</strong>입니다.
+        그 압박을 안 풀어주면서 hop 지연만 추가하니, “not wise” 가 됩니다.
+      </p>
+    </div>
+
+    <h3>그래서 frontier lab은</h3>
+    <p>
+      가능하면 한 <span class="term" data-term="scale-up">scale-up</span> 도메인 안에 다 욱여넣고, pipeline은 최소화.
+      그래서 Nvidia가 한 랙당 GPU 수를 4배로 끌어올리려고 (Hopper 8 → Blackwell 72 → Rubin 500)
+      케이블 밀도 같은 물리적 한계와 싸우는 겁니다.
+    </p>
+
+    <details class="details">
+      <summary>더 자세히: 그럼 pipeline을 언제는 쓰나</summary>
+      <div class="details-body">
+        <p>
+          모델 가중치가 한 scale-up 도메인의 HBM 합보다 클 때는 어쩔 수 없이 pipeline을 씁니다.
+          예: 5T 파라미터 모델 + 한 랙의 HBM 합 = 13TB → 4 랙 pipeline 필요.
+        </p>
+        <p>
+          하지만 한 도메인에 들어가면, pipeline의 “KV 안 풀림 + hop 지연” 비용을 안 내는 게 압도적으로 유리.
+        </p>
+      </div>
+    </details>
+
+    <div class="quiz" data-module="module9"></div>
+  </section>
+
+
+  <!-- ============================================
+       MODULE 10 - Chinchilla and 100x
+       ============================================ -->
+  <section class="module" id="module10">
+    <span class="module-tag">10 · 학습 경제학</span>
+    <h2>Chinchilla 와 100배 오버트레이닝</h2>
+    <p class="module-lede">
+      “파라미터 1개당 토큰 20개” 라는 옛 권고는 frontier에서 무시되고 있습니다.
+      이유는 단순합니다: <strong>학습 비용보다 추론 비용이 훨씬 큽니다.</strong>
+    </p>
+
+    <h3>Chinchilla 란?</h3>
+    <p>
+      2022년 DeepMind 논문이 제시한 “<span class="term" data-term="compute optimal">compute-optimal</span>” 배합:
+      파라미터 N 개의 모델은 약 <strong>20N</strong> 토큰으로 학습할 때 학습 FLOPs 대비 가장 좋은 모델이 됩니다.
+    </p>
+    <ul>
+      <li>70B 모델 → ~1.4T 토큰</li>
+      <li>100B 모델 → ~2T 토큰</li>
+    </ul>
+
+    <h3>그런데 frontier 모델은</h3>
+    <p>
+      추정에 따르면 GPT-5나 Claude 4 같은 모델은 100T+ 토큰으로 학습됐습니다.
+      100B 파라미터 모델 기준으로 권고치는 2T인데 실제는 ~200T → <strong>100배 over-train</strong>.
+    </p>
+    <p>이걸 어떻게 합리화 하나? Reiner의 답은 “<span class="term" data-term="amortize">평생 추론 비용</span>” 입니다.</p>
+
+    <h3>비용 균등화 휴리스틱</h3>
+    <p>
+      두 비용의 합 \(f(x) = 1/x + x\) 는 \(x = 1\) 에서 최소가 됩니다.
+      비슷하게, “total_cost = train + infer” 처럼 한쪽을 늘리면 다른 쪽이 줄어드는 경우,
+      <strong>두 비용이 같아지는 지점</strong> 근처가 자주 최적입니다.
+    </p>
+    <p>그래서 frontier는 다음을 비슷하게 맞춥니다:</p>
+    <div class="equation">
+      <span class="label">3-way 균등화</span>
+      Pretraining 비용  ≈  RL 비용  ≈  평생 Inference 비용
+    </div>
+    <p>각 비용을 풀어 쓰면:</p>
+    <ul>
+      <li><strong>Pretraining</strong>: 6 × N_active × D_pre  (forward 3 + backward 3)</li>
+      <li><strong>RL</strong>: α × N_active × D_RL  (α ∈ [2, 6])</li>
+      <li><strong>Inference</strong>: 2 × N_active × D_inf  (forward만)</li>
+    </ul>
+    <p>α의 범위가 2~6인 이유: <span class="term" data-term="RL">RL</span>의 토큰은 “모델이 직접 생성한 후보들” 이라
+    상당량은 generation(forward)이고, 일부만 backward. 사실상 “추론에 가까운 학습”.</p>
+
+    <h3>실제 숫자로 100배가 나오는 과정</h3>
+    <p>2025년 frontier 추정값으로:</p>
+    <ul>
+      <li>한 모델 평생 추론 토큰 D_inf ≈ 200T</li>
+      <li>Active params N_active ≈ 100B</li>
+      <li>Inference 비용 = 2 × 100e9 × 200e12 = 4 × 10²⁵ FLOPs</li>
+      <li>비슷한 규모로 pretrain 비용을 맞추려면 D_pre ≈ (2/6) × 200T ≈ 67T 토큰
+        — Pope 추정의 “150T” 와 같은 자릿수.</li>
+      <li>Chinchilla 권고는 20 × 100B = 2T 토큰</li>
+    </ul>
+    <div class="equation">
+      <span class="label">결과</span>
+      D_pre / D_chinchilla   =   100T / 2T   ≈   <strong>100배</strong>
+    </div>
+
+    <div class="callout insight">
+      <span class="callout-label">Reiner의 한 줄</span>
+      <p style="margin:0">
+        “각 모델은 자신이 받는 모든 입력에 대한 응답으로 인류의 모든 글의 합을 생성한다.”
+        — 이게 100배 over-training의 정성적 의미입니다.
+      </p>
+    </div>
+
+    <details class="details">
+      <summary>더 자세히: 왜 균등화가 최적인가</summary>
+      <div class="details-body">
+        <p>
+          비용을 \(C(N, D) = a × N + b/N\) 같은 형태로 쓸 수 있을 때 (한 항은 N에 비례, 다른 항은 1/N에 비례),
+          미분해서 0 으로 놓으면 두 항이 같아지는 점이 최소가 됩니다.
+        </p>
+        <p>
+          학습/추론 trade-off도 비슷합니다: 모델을 작게 만들면 (N ↓) 추론은 싸지지만 같은 quality 유지에는 더 학습이 필요해
+          학습 비용이 ↑. 두 비용이 같아질 때 합이 최소.
+        </p>
+      </div>
+    </details>
+
+    <div class="quiz" data-module="module10"></div>
+  </section>
+
+
+  <!-- ============================================
+       MODULE 11 - Long context economics
+       ============================================ -->
+  <section class="module" id="module11">
+    <span class="module-tag">11 · 가격 리버스 엔지니어링</span>
+    <h2>Long Context 의 경제학</h2>
+    <p class="module-lede">
+      “Gemini가 200K에서 가격을 50% 올린다” 는 한 줄에 담긴 정보가 충격적입니다.
+      이 모듈은 그 한 줄에서 모델 구조까지 거꾸로 푸는 과정을 보여줍니다.
+    </p>
+
+    <h3>가격 곡선의 형태</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="컨텍스트 길이에 따른 토큰당 비용">
+        <!-- axes -->
+        <line x1="50" y1="240" x2="560" y2="240" stroke="#1a1a1a" stroke-width="1"/>
+        <line x1="50" y1="20" x2="50" y2="240" stroke="#1a1a1a" stroke-width="1"/>
+        <text x="305" y="270" text-anchor="middle" font-family="system-ui" font-size="11" fill="#5a5a5a">컨텍스트 길이 →</text>
+        <text x="20" y="130" font-family="system-ui" font-size="11" fill="#5a5a5a" transform="rotate(-90, 20, 130)">토큰당 비용 →</text>
+
+        <!-- flat region -->
+        <line x1="50" y1="180" x2="320" y2="180" stroke="#0d6e63" stroke-width="2.5"/>
+        <!-- elbow -->
+        <circle cx="320" cy="180" r="4" fill="#c2410c"/>
+        <line x1="320" y1="180" x2="320" y2="240" stroke="#5a5a5a" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <text x="320" y="252" text-anchor="middle" font-family="system-ui" font-size="11" fill="#c2410c" font-weight="700">~200K</text>
+        <text x="180" y="165" text-anchor="middle" font-family="system-ui" font-size="11" fill="#0d6e63" font-weight="600">계산 한정 (평탄)</text>
+        <!-- rising region -->
+        <path d="M 320 180 Q 400 150 480 100 L 540 60" stroke="#c2410c" stroke-width="2.5" fill="none"/>
+        <text x="450" y="115" font-family="system-ui" font-size="11" fill="#c2410c" font-weight="600">메모리 한정 (상승)</text>
+      </svg>
+      <div class="diagram-caption">
+        짧은 컨텍스트에서는 가격이 평탄, 어떤 지점부터 KV fetch가 압도해 비용이 올라감.
+        Gemini가 이 “꺾이는 점” 에 가격 분기를 둠.
+      </div>
+    </div>
+
+    <p>
+      Gemini 2.x는 이렇게 가격을 책정합니다:
+    </p>
+    <ul>
+      <li>컨텍스트 < 200K: 1× 가격</li>
+      <li>컨텍스트 ≥ 200K: 1.5× 가격</li>
+    </ul>
+    <p>
+      이건 마케팅이 아니라 <strong>그 지점이 메모리 시간 = 계산 시간 의 inflection point</strong> 라는 신호입니다.
+    </p>
+
+    <h3>거꾸로 푸는 수학</h3>
+    <p>
+      균형점에서: KV fetch 시간 ≈ 계산 시간.
+    </p>
+    <div class="equation">
+      <span class="label">균형 조건</span>
+      (B × L × bytes_per_token) / bandwidth   =   (B × N_active) / FLOPs
+    </div>
+    <p>양변에서 B 약분, 정리:</p>
+    <div class="equation">
+      L × bytes_per_token   =   N_active × (bandwidth / FLOPs)
+                              =   N_active / 300       ← 마법의 숫자!
+    </div>
+    <p>L = 200K, N_active = 100B 대입:</p>
+    <div class="equation">
+      bytes_per_token   =   100e9 / (200,000 × 300)   ≈   <strong>1,667 bytes ≈ 2 KB</strong>
+    </div>
+    <p>
+      이게 모듈 8 에서 본 KV cache 공식 “2 × layers × d_head × num_KV_heads” 의 결과와 정확히 일치합니다.
+      <strong>Gemini의 가격 한 줄에서 모델의 head 구조까지 거꾸로 풀려 나옵니다.</strong>
+    </p>
+
+    <h3>또 다른 신호 ① — Prefill vs Decode 가격</h3>
+    <p>
+      대부분 API 가격에서 출력 토큰이 입력 토큰보다 5-10배 비쌉니다. 왜?
+    </p>
+    <ul>
+      <li><span class="term" data-term="prefill">Prefill</span>: 사용자 prompt N 토큰을 한 번에 처리.
+        가중치 한 번 fetch에 N 토큰 모두 처리 가능 → 토큰당 가중치 비용 = 1/N</li>
+      <li><span class="term" data-term="decode">Decode</span>: 한 번에 한 토큰씩 생성.
+        매 토큰마다 가중치 fetch → 토큰당 가중치 비용 = 1</li>
+    </ul>
+    <p>
+      비율이 5-10배라는 건 “가중치 fetch가 비용의 5-10배에 달한다” —
+      즉 frontier 추론은 “심하게 메모리 묶임”.
+    </p>
+
+    <h3>또 다른 신호 ② — Cache Hit vs Cache Miss</h3>
+    <p>
+      많은 API는 “<span class="term" data-term="prompt caching">prompt caching</span>” 을 제공합니다.
+      같은 prefix를 반복 요청하면 두 번째부터는 ~10배 싸집니다.
+    </p>
+    <ul>
+      <li>Cache miss = prefill 다시 (forward pass 전체)</li>
+      <li>Cache hit = HBM 에서 KV 끌어오기만</li>
+      <li>10배 차이 → HBM 접근 비용이 forward의 1/10</li>
+    </ul>
+
+    <div class="callout insight">
+      <span class="callout-label">한 점에서 풀려 나온 것들</span>
+      <p style="margin:0">
+        “Gemini가 200K에서 가격 50% 올림” 한 줄에서 — KV cache 크기, 모델 head 구조,
+        “심하게 메모리 묶임” 이라는 운영 사실, prompt caching의 경제적 합리성까지 거꾸로 풀려 나옵니다.
+        이게 Reiner의 “공개 가격으로 frontier lab을 reverse engineering”의 정수입니다.
+      </p>
+    </div>
+
+    <h3>왜 200K에서 멈춰 있나</h3>
+    <p>
+      현재 frontier 모델의 “유효한” 컨텍스트는 1-2년째 100-200K 근처에서 정체.
+      이유는 메모리 대역폭. Computational cost는 컨텍스트에 선형으로만 늘지만,
+      메모리 압박이 200K 즈음에서 “batch를 줄여야 함” → “토큰당 비용 ↑” 로 폭발합니다.
+    </p>
+    <p>
+      Sparse attention 같은 기법으로 효과적 컨텍스트를 늘릴 수는 있지만 무한정은 아니고,
+      “HBM은 그대로” 라는 물리법칙이 한계.
+      <strong>AGI 의 “in-context learning” 이 100M 토큰 컨텍스트를 요구할 거라는 가설</strong>이 맞다면,
+      엄청난 ML 인프라 돌파구가 필요하다는 뜻입니다.
+    </p>
+
+    <div class="quiz" data-module="module11"></div>
+  </section>
+
+
+  <!-- ============================================
+       MODULE 12 - Synthesis
+       ============================================ -->
+  <section class="module" id="module12">
+    <span class="module-tag">12 · 종합</span>
+    <h2>한 장의 그림</h2>
+    <p class="module-lede">
+      모든 개념이 어떻게 한 의사결정 안에서 맞물리는지 봅시다. 영상 전체가 이 한 장으로 압축됩니다.
+    </p>
+
+    <h3>frontier serving 의 “4 숫자 + 1 휴리스틱”</h3>
+    <p>영상의 모든 결론은 다음에서 나옵니다:</p>
+
+    <table style="width:100%; border-collapse: collapse; margin: 20px 0; font-size: 15px;">
+      <thead>
+        <tr style="background: var(--accent-soft); text-align: left;">
+          <th style="padding: 10px; border-bottom: 2px solid var(--accent);">숫자</th>
+          <th style="padding: 10px; border-bottom: 2px solid var(--accent);">출처</th>
+          <th style="padding: 10px; border-bottom: 2px solid var(--accent);">결정하는 것</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:10px; border-bottom:1px solid var(--border);"><strong>FLOPs/bandwidth ≈ 300</strong></td>
+          <td style="padding:10px; border-bottom:1px solid var(--border);">GPU 데이터시트</td>
+          <td style="padding:10px; border-bottom:1px solid var(--border);">최적 batch size, 가격 inflection</td>
+        </tr>
+        <tr>
+          <td style="padding:10px; border-bottom:1px solid var(--border);"><strong>Sparsity</strong></td>
+          <td style="padding:10px; border-bottom:1px solid var(--border);">모델 카드 (active/total)</td>
+          <td style="padding:10px; border-bottom:1px solid var(--border);">batch ≈ 300 × sparsity</td>
+        </tr>
+        <tr>
+          <td style="padding:10px; border-bottom:1px solid var(--border);"><strong>Layer 수, head 차원</strong></td>
+          <td style="padding:10px; border-bottom:1px solid var(--border);">모델 카드</td>
+          <td style="padding:10px; border-bottom:1px solid var(--border);">bytes/token, 가능한 컨텍스트 길이</td>
+        </tr>
+        <tr>
+          <td style="padding:10px; border-bottom:1px solid var(--border);"><strong>Total params</strong></td>
+          <td style="padding:10px; border-bottom:1px solid var(--border);">모델 카드</td>
+          <td style="padding:10px; border-bottom:1px solid var(--border);">한 랙으로 가능한지, pipeline 필요 여부</td>
+        </tr>
+        <tr>
+          <td style="padding:10px;"><strong>비용 균등화 휴리스틱</strong></td>
+          <td style="padding:10px;">경제적 추론</td>
+          <td style="padding:10px;">100배 over-training, RL/inference 분배</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>의사결정 흐름</h3>
+    <ol>
+      <li><strong>모델이 한 scale-up 도메인에 들어가나?</strong>
+        — 들어가면 expert parallelism + all-to-all 만으로 끝. 안 들어가면 pipeline.</li>
+      <li><strong>최적 batch는?</strong>
+        — 300 × sparsity. KV 메모리 한도 안에서 그만큼 모음.</li>
+      <li><strong>가격은?</strong>
+        — 토큰당 가중치 fetch 시간 / batch + 토큰당 KV fetch 시간.
+        Long context 에서는 후자가 빠르게 압도 → inflection 가격.</li>
+      <li><strong>Pipeline 추가하지 말 것</strong>
+        — Latency 안 줄고, KV 안 줄고, 가중치 메모리만 줆.
+        한 도메인에 안 들어갈 때만 어쩔 수 없이.</li>
+      <li><strong>학습은 100배 over-train</strong>
+        — 평생 추론 비용이 학습 비용보다 큰 게 자명하니까, 작은 모델 + 더 학습 = 총 비용 ↓.</li>
+    </ol>
+
+    <h3>마지막 통찰</h3>
+    <div class="callout insight">
+      <span class="callout-label">Reiner Pope</span>
+      <p style="margin:0">
+        “추론 비용을 모르면 모델 디자인을 이해할 수 없다.”
+        모델의 거의 모든 결정 — 모델 크기, sparsity, layer 수, head 구성, 학습 토큰 수 —
+        은 결국 “평생 토큰당 추론 비용을 얼마로 만들 것인가” 라는 한 질문에 의해 결정됩니다.
+        프론티어 lab들이 외계 어휘로 말하는 것 같지만, 본질은 모듈 2-4의 직관에 다 있습니다.
+      </p>
+    </div>
+
+    <h3>이제 영상으로 돌아가세요</h3>
+    <p>
+      다 읽으셨다면, 이제 원 영상을 처음부터 보세요.
+      Reiner가 칠판에 “batch × N_active / FLOPs” 같은 걸 쓰는 모든 순간이 의미를 갖게 될 겁니다.
+      특히 영상의 1:18:59 (Chinchilla) 와 1:33:02 (long context 가격 reverse engineering) 가 가장 짜릿한 부분입니다.
+    </p>
+    <p style="text-align:center; margin: 30px 0;">
+      <a class="btn" href="https://www.youtube.com/watch?v=xmkSf5IS-zw" target="_blank" rel="noopener">▶ 원 영상 다시 보기</a>
+    </p>
+
+    <div class="quiz" data-module="module12"></div>
+  </section>
+
+
+</main>
+
+<!-- ========== GLOSSARY MODAL ========== -->
+<div class="glossary-modal" role="dialog" aria-modal="true" aria-label="용어 사전">
+  <div class="glossary-content">
+    <div class="glossary-header">
+      <h3>용어 사전</h3>
+      <button class="glossary-close nav-close" aria-label="닫기">×</button>
+    </div>
+    <div class="glossary-search">
+      <input type="text" placeholder="검색 (예: KV cache, sparsity, NVLink)…" aria-label="용어 검색">
+    </div>
+    <div class="glossary-body"></div>
+  </div>
+</div>
+
+<button class="fab" aria-label="용어 사전 열기" title="용어 사전 (모든 용어 검색)">
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle">
+    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+  </svg>
+</button>
+
+<!-- ========== FOOTER ========== -->
+<footer class="site-footer">
+  <p>
+    이 페이지는 <a href="https://www.youtube.com/watch?v=xmkSf5IS-zw" target="_blank" rel="noopener">Dwarkesh Podcast × Reiner Pope</a>
+    에피소드 (“How GPT, Claude, and Gemini are actually trained and served”) 를 학습 자료로 풀어쓴 것입니다.
+  </p>
+  <p style="margin-top:6px; font-size:12px;">원본 콘텐츠의 모든 권리는 저자에게 있습니다. 본 페이지는 학습 목적의 해설/요약/시각화입니다.</p>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
