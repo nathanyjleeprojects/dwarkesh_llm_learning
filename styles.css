@@ -774,6 +774,12 @@ footer.site-footer a:hover { text-decoration: underline; }
 .hero .meta span { display: inline-flex; align-items: center; gap: 6px; }
 .hero .meta .dot { color: var(--accent); }
 
+.video-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
 .video-link {
   display: inline-block;
   font-size: 14px;
