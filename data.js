@@ -9,259 +9,259 @@ const GLOSSARY = {
   // ===== LLM 기초 =====
   "LLM": {
     title: "Large Language Model",
-    body: "방대한 텍스트로 학습된 거대한 신경망. 다음 토큰을 확률적으로 예측. ChatGPT, Claude, Gemini가 모두 LLM."
+    body: "방대한 텍스트로 학습된 거대한 신경망. 다음 토큰을 확률적으로 예측하는 함수로 동작. ChatGPT, Claude, Gemini 가 모두 여기에 해당."
   },
   "토큰": {
     title: "Token",
-    body: "LLM이 다루는 단어의 조각. 영어 평균 ≈ 0.75단어/토큰, 한국어는 더 잘게 쪼개짐. 모델은 토큰 단위로 입력/출력."
+    body: "LLM 이 입출력 단위로 다루는 \"단어 조각\". 영어 평균 ≈ 1 토큰당 0.75 단어, 한국어는 더 잘게 쪼개지는 경향이 있음."
   },
   "가중치": {
     title: "Weights / Parameters",
-    body: "학습으로 결정된 신경망 내부의 숫자들. 수십억~수조 개. <strong>한 번 학습되면 고정</strong>되어, 추론 시에는 GPU 메모리에서 읽기만 함."
+    body: "학습 과정에서 결정된 신경망 내부의 숫자들. 수십억~수조 개에 이름. <strong>한 번 학습되면 그 값이 고정</strong> 되며, 추론 시에는 GPU 메모리에서 읽기만 함."
   },
   "추론": {
     title: "Inference",
-    body: "이미 학습된 모델을 써서 사용자 질문에 답을 생성하는 과정. (학습 = 가중치 만들기 / 추론 = 가중치 쓰기)"
+    body: "이미 학습된 모델을 사용해 사용자의 질문에 답을 생성하는 과정. (학습 = 가중치를 만드는 일 / 추론 = 가중치를 사용하는 일)"
   },
   "forward pass": {
     title: "Forward Pass",
-    body: "입력 → 모델의 모든 layer 통과 → 출력 한 토큰. 추론은 전부 forward pass의 반복."
+    body: "입력을 모델의 모든 layer 에 순차적으로 통과시켜 출력 한 단계를 만드는 과정. 추론은 결국 forward pass 를 반복하는 일."
   },
   "backward pass": {
     title: "Backward Pass",
-    body: "출력의 오차를 거꾸로 전파해 가중치를 업데이트. 학습에서만 일어남. forward의 ~2배 비용."
+    body: "출력의 오차를 거꾸로 전파해 가중치를 갱신하는 과정. 학습에서만 일어나며, forward 대비 약 2배의 비용이 듦."
   },
   "트랜스포머": {
     title: "Transformer",
-    body: "현재 모든 frontier LLM의 기본 아키텍처 (2017). 핵심은 <strong>self-attention</strong>: 각 토큰이 이전 모든 토큰을 \"참조\"하는 메커니즘."
+    body: "현재 모든 frontier LLM 의 기본 아키텍처 (2017). 핵심은 <strong>self-attention</strong> — 각 토큰이 이전 모든 토큰을 \"참조\" 하는 메커니즘."
   },
   "attention": {
     title: "Attention",
-    body: "트랜스포머의 핵심 연산. 새 토큰을 만들 때 이전 토큰들 중 어디에 \"주목\"할지를 가중합으로 결정. 그래서 토큰 메모리(KV)가 필요."
+    body: "트랜스포머의 핵심 연산. 새 토큰을 만들 때 이전 토큰들 중 어디에 \"주목\" 할지를 가중합으로 결정. 이 메커니즘 때문에 KV cache 같은 토큰별 메모리가 필요해짐."
   },
 
   // ===== 이 영상의 주역들 =====
   "KV cache": {
     title: "KV Cache",
-    body: "Attention 계산에 쓰이는 Key/Value 텐서를 토큰마다 저장. 다음 토큰 생성 때 이전 토큰들의 K,V를 <strong>다시 계산하지 않게</strong> 함. 사용자(=시퀀스)마다 따로 가짐. 컨텍스트가 길수록 누적됨."
+    body: "Attention 계산에 쓰이는 Key/Value 텐서를 토큰마다 저장해 두는 메모리. 새 토큰을 만들 때 이전 토큰들의 K, V 를 <strong>다시 계산하지 않아도 되게</strong> 해 줌. 사용자(시퀀스) 마다 따로 보관되며, 컨텍스트가 길수록 누적됨."
   },
   "batch": {
     title: "Batch",
-    body: "이 맥락에서 = <strong>여러 사용자의 요청을 한 forward에 같이 묶기</strong>. 가중치 한 번 읽어 N명에게 적용 → 비용 1/N. \"배치 사이즈\" = 동시에 처리하는 시퀀스 수."
+    body: "이 맥락에서는 <strong>여러 사용자의 요청을 한 번의 forward pass 에 함께 묶어 처리하는 일</strong>. 가중치를 한 번 읽어 N 명에게 적용 → 토큰당 가중치 비용이 1/N 로 줄어듦. \"batch size\" = 동시에 처리하는 시퀀스 수."
   },
   "batch size": {
     title: "Batch Size",
-    body: "한 번의 forward pass에서 함께 처리하는 시퀀스(사용자) 수. 너무 작으면 가중치 fetch가 비싸짐, 너무 크면 KV/계산이 늘어남. 최적점이 존재."
+    body: "한 번의 forward pass 에서 함께 처리하는 시퀀스(사용자) 수. 너무 작으면 가중치 fetch 비용이 토큰당으로 매우 비싸지고, 너무 크면 사용자별 KV cache 가 메모리 한도를 압박함. 둘 사이의 최적점이 존재."
   },
   "MoE": {
     title: "Mixture of Experts (MoE)",
-    body: "각 layer에 \"전문가\" MLP를 여러 개 두고, 토큰마다 일부만 활성화. <strong>전체는 거대하지만 토큰당 계산은 적음</strong>. DeepSeek은 256개 중 32개 활성."
+    body: "각 layer 안에 \"전문가\" MLP 를 여러 개 두고, 토큰마다 그 중 일부만 활성화하는 구조. <strong>모델 전체는 거대하지만 토큰당 계산량은 작음</strong>. DeepSeek 의 경우 256 개 expert 중 32 개를 활성화."
   },
   "expert": {
     title: "Expert",
-    body: "MoE의 작은 MLP. \"이 토큰은 어떤 expert가 잘 처리하지?\"를 router가 결정."
+    body: "MoE 안의 작은 MLP. \"이 토큰은 어떤 expert 가 잘 처리할까\" 를 router 가 결정."
   },
   "router": {
     title: "Router",
-    body: "MoE에서 각 토큰을 어떤 expert에게 보낼지 정하는 작은 신경망. 학습으로 그 정책이 결정됨."
+    body: "MoE 에서 각 토큰을 어떤 expert 들로 보낼지 결정하는 작은 신경망. 라우팅 정책은 학습 과정에서 자동으로 결정됨."
   },
   "sparsity": {
     title: "Sparsity",
-    body: "MoE에서 <code>전체 expert / 활성 expert</code>. DeepSeek은 256/32 = 8. <strong>최적 batch ≈ 300 × sparsity</strong>."
+    body: "MoE 에서 <code>total params / active params</code> 의 비율. DeepSeek 은 256/32 = 8. Dense 모델은 1. <strong>최적 batch ≈ 300 × sparsity</strong>."
   },
   "active params": {
     title: "Active Parameters",
-    body: "한 토큰을 처리할 때 실제로 쓰이는 가중치 수. MoE에서는 total보다 훨씬 작음. 추론 비용은 active에 비례."
+    body: "한 토큰을 처리할 때 실제로 통과하는 가중치의 개수. MoE 에서는 total 보다 훨씬 작음. 토큰당 추론 비용은 active 에 비례."
   },
   "total params": {
     title: "Total Parameters",
-    body: "모델의 모든 가중치 합. MoE에서는 total >> active. GPU 메모리에 모두 올려야 함 (라우팅이 어디로 갈지 미리 모르니)."
+    body: "모델의 모든 expert 가중치 합. MoE 에서는 total >> active. 어떤 expert 로 라우팅될지 미리 알 수 없으므로 GPU 메모리에는 항상 total 전체를 올려두어야 함."
   },
   "router layer": {
     title: "Router Layer",
-    body: "MoE 블록 입구. 토큰을 받아 \"어떤 expert로?\"를 결정. 출력은 expert 인덱스와 가중치."
+    body: "MoE 블록의 입구. 토큰을 받아 \"어떤 expert 로 보낼지\" 를 결정. 출력은 선택된 expert 인덱스들과 각각의 가중치."
   },
 
   // ===== 하드웨어 =====
   "GPU": {
     title: "GPU",
-    body: "병렬 행렬곱에 특화된 칩. LLM은 결국 거대한 행렬곱이라 GPU가 강함. NVIDIA H100, B100 등."
+    body: "병렬 행렬곱에 특화된 칩. LLM 의 거의 모든 계산이 행렬곱이라 GPU 가 매우 잘 맞음. NVIDIA H100, B100 등이 대표적."
   },
   "HBM": {
     title: "High Bandwidth Memory",
-    body: "GPU 옆에 붙은 초고속 메모리. 가중치/KV cache가 여기 살고, 매 토큰마다 여기서 읽어옴. 용량 80~288GB, 대역폭 3~20 TB/s."
+    body: "GPU 다이 바로 옆에 붙어 있는 초고속 메모리. 가중치와 KV cache 가 이곳에 상주하며, 매 토큰마다 여기서 코어로 데이터를 읽어옴. 용량 80~288 GB, 대역폭 3~20 TB/s."
   },
   "FLOPs": {
     title: "FLOPs / FLOP/s",
-    body: "Floating Point Operations. <strong>FLOPs</strong>(복수, 누적량) = \"이 연산은 N번의 부동소수 연산\". <strong>FLOP/s</strong> = \"초당 연산 처리량\". B100은 ~4.5 PFLOP/s."
+    body: "Floating Point Operations. <strong>FLOPs</strong>(복수, 누적량) = \"이 연산은 총 N 번의 부동소수 연산이 든다\". <strong>FLOP/s</strong> = \"초당 가능한 연산 횟수 (처리량)\". B100 은 약 4.5 PFLOP/s."
   },
   "memory bandwidth": {
     title: "Memory Bandwidth",
-    body: "GPU가 HBM에서 데이터를 끌어올 수 있는 속도 (TB/s). 추론은 이 대역폭에 자주 발목 잡힘 - <strong>계산보다 \"데이터 가져오기\"가 느려서</strong>."
+    body: "GPU 코어가 HBM 에서 데이터를 끌어올 수 있는 속도 (TB/s). 추론은 이 대역폭에 자주 발목이 잡힘 — <strong>계산 자체보다 \"데이터 가져오기\" 가 더 느려서</strong>."
   },
   "roofline": {
     title: "Roofline Model",
-    body: "성능 = min(피크 계산력, 데이터 전송 한계) 라는 분석 틀. \"내 작업은 둘 중 어느 쪽에 발목 잡히나\"를 보는 도구."
+    body: "성능 = min(피크 계산력, 데이터 전송 한계) 이라는 분석 틀. \"이 작업은 두 한계 중 어느 쪽에 발목이 잡혀 있는가\" 를 보는 도구."
   },
   "throughput": {
     title: "Throughput",
-    body: "초당 처리량 (예: tokens/sec). 단위 시간당 얼마나 많이?"
+    body: "단위 시간당 얼마나 많은 일을 하는가 (예: tokens/sec)."
   },
   "latency": {
     title: "Latency",
-    body: "한 작업의 시작부터 끝까지 걸리는 시간 (예: ms). 한 토큰 만드는 데 얼마나?"
+    body: "한 작업의 시작부터 끝까지 걸리는 시간 (예: ms). LLM 에서는 \"한 토큰을 만들어 내는 데 걸리는 시간\" 정도를 의미."
   },
 
   // ===== Nvidia 칩 세대 =====
   "Hopper": {
     title: "Hopper (H100)",
-    body: "Nvidia 2022 세대. ~80GB HBM, ~3 TB/s. 8개 GPU가 한 트레이(scale-up 도메인)."
+    body: "Nvidia 2022 세대. GPU 당 ~80 GB HBM, ~3 TB/s. 8 개 GPU 가 한 트레이를 이루어 하나의 scale-up 도메인이 됨."
   },
   "Blackwell": {
     title: "Blackwell (B100/B200)",
-    body: "Nvidia 2024 세대. ~192GB HBM, ~8 TB/s. 64-72개 GPU가 한 랙(NVL72)."
+    body: "Nvidia 2024 세대. GPU 당 ~192 GB HBM, ~8 TB/s. 64-72 개 GPU 가 하나의 랙 (NVL72) 을 이루어 scale-up 도메인이 됨."
   },
   "Rubin": {
     title: "Rubin",
-    body: "Nvidia 차차세대 (~2026). ~288GB HBM, ~20 TB/s. ~500개 GPU를 한 scale-up 도메인에. 케이블 밀도 4배 향상."
+    body: "Nvidia 차세대 (~2026). GPU 당 ~288 GB HBM, ~20 TB/s. 약 500 개 GPU 를 하나의 scale-up 도메인으로 묶음. 케이블 밀도가 약 4 배 향상된 결과."
   },
   "DeepSeek": {
     title: "DeepSeek",
-    body: "중국발 오픈소스 frontier MoE 모델. 256 expert 중 32개 활성. 영상에서 \"공개된 사양\"의 예시로 자주 등장."
+    body: "중국발 오픈소스 frontier MoE 모델. 256 개 expert 중 32 개를 활성화. 영상에서 \"공개된 모델 사양\" 의 예시로 자주 등장."
   },
   "TPU": {
     title: "TPU (Tensor Processing Unit)",
-    body: "Google이 만든 ML 전용 칩. Reiner Pope가 Google 시절 작업. Gemini는 TPU에서 학습/서빙."
+    body: "Google 이 자체 설계한 ML 전용 칩. Reiner Pope 가 Google 재직 시절에 다루던 하드웨어. Gemini 는 TPU 위에서 학습 / 서빙됨."
   },
 
   // ===== 분산 / 병렬화 =====
   "scale-up": {
     title: "Scale-up Network",
-    body: "랙 <strong>안</strong>의 GPU들을 잇는 초고속 연결망. NVLink. 1× 기준."
+    body: "한 랙 <strong>안</strong> 의 GPU 들을 잇는 초고속 연결망 (NVLink). 기준 속도 1×."
   },
   "scale-out": {
     title: "Scale-out Network",
-    body: "랙 <strong>사이</strong>를 잇는 데이터센터 이더넷. scale-up보다 ~8× 느림. \"건너편 랙으로 가야 한다\"는 건 비싼 일."
+    body: "랙 <strong>사이</strong> 를 잇는 데이터센터 이더넷. scale-up 대비 약 8× 느림. \"옆 랙으로 데이터를 보내는 일\" 은 비교적 비싼 작업."
   },
   "NVLink": {
     title: "NVLink",
-    body: "Nvidia GPU 간 직접 연결 버스. 랙 안에서 다른 GPU를 거의 \"옆 메모리\"처럼 접근 가능."
+    body: "Nvidia GPU 들을 직접 연결하는 고속 버스. 한 랙 안에서 다른 GPU 의 메모리를 거의 \"옆 메모리\" 처럼 접근할 수 있게 해 줌."
   },
   "rack": {
     title: "Rack",
-    body: "데이터센터에서 GPU가 모인 한 캐비닛. 64-72개 GPU. 전력/냉각/케이블 한계로 더 키우기 어려움."
+    body: "데이터센터에서 GPU 들이 모여 있는 한 캐비닛. 보통 64-72 개의 GPU 가 들어감. 전력 / 냉각 / 케이블 밀도의 물리적 한계 때문에 더 키우기 어려움."
   },
   "all-to-all": {
     title: "All-to-All Communication",
-    body: "모든 GPU가 모든 GPU에게 데이터를 보내야 하는 통신 패턴. MoE의 \"각 토큰이 어떤 GPU의 expert로 갈지 모름\" 때문에 필연. 랙 안에서는 빠르지만 랙을 넘으면 비쌈."
+    body: "모든 GPU 가 모든 다른 GPU 에게 데이터를 보내야 하는 통신 패턴. MoE 에서 \"각 토큰이 어떤 GPU 의 expert 로 갈지 미리 알 수 없기\" 때문에 필연적. 랙 안에서는 빠르지만 랙을 넘으면 매우 비쌈."
   },
   "expert parallelism": {
     title: "Expert Parallelism",
-    body: "MoE의 expert들을 GPU별로 나눠 두는 분산 방식. 각 GPU는 일부 expert만 갖고, 토큰을 그쪽으로 라우팅."
+    body: "MoE 의 expert 들을 GPU 별로 나누어 배치하는 분산 방식. 각 GPU 는 일부 expert 만 갖고, 토큰을 그쪽 GPU 로 라우팅."
   },
   "pipeline parallelism": {
     title: "Pipeline Parallelism",
-    body: "모델의 layer를 여러 그룹으로 잘라 각 그룹을 다른 GPU(또는 랙)가 맡음. \"layer 0-25는 rack 0, 26-50은 rack 1...\""
+    body: "모델의 layer 를 여러 그룹으로 잘라 각 그룹을 다른 GPU (또는 랙) 가 맡는 분산 방식. 예: \"layer 0-25 는 rack 0, 26-50 은 rack 1...\""
   },
   "tensor parallelism": {
     title: "Tensor Parallelism",
-    body: "한 layer 안의 행렬을 쪼개 여러 GPU에서 동시에 곱하는 방식. 통신이 잦아 보통 한 노드/랙 안에서만 함."
+    body: "한 layer 안의 큰 행렬을 쪼개 여러 GPU 에서 동시에 곱하는 방식. 통신이 잦아 보통 한 노드 / 랙 안에서만 사용됨."
   },
   "data parallelism": {
     title: "Data Parallelism",
-    body: "같은 모델 사본을 여러 GPU에 두고 각자 다른 배치를 처리. 학습에서 일반적, 추론에서는 \"인스턴스 여러 개\"로 자연스럽게 됨."
+    body: "같은 모델의 사본을 여러 GPU 에 두고 각자 서로 다른 batch 를 처리. 학습에서 일반적이며, 추론에서는 \"같은 모델 인스턴스를 여러 개 띄우는 것\" 으로 자연스럽게 구현됨."
   },
   "pipeline bubble": {
     title: "Pipeline Bubble",
-    body: "Pipeline 학습에서 forward와 backward가 동기화되어야 해서 일부 stage가 놀게 되는 시간. micro-batch로 줄임."
+    body: "Pipeline 학습에서 forward 와 backward 의 동기화 때문에 일부 stage 가 일시적으로 놀게 되는 시간. micro-batch 를 잘게 쪼개고 영리한 스케줄링으로 줄일 수 있지만 완전 제거는 어려움."
   },
   "micro-batch": {
     title: "Micro-batch",
-    body: "Pipeline에서 한 \"전체 배치\"를 더 잘게 쪼갠 단위. <code>global_batch = micro_batch × pipeline_stages</code>."
+    body: "Pipeline 학습에서 한 \"전체 batch\" 를 더 잘게 쪼갠 단위. <code>global_batch = micro_batch × pipeline_stages</code>."
   },
 
   // ===== 추론 / 서빙 =====
   "prefill": {
     title: "Prefill",
-    body: "사용자 프롬프트(예: 1만 토큰)를 한번에 모델에 통과시켜 첫 토큰을 만들 준비. 모든 토큰이 <strong>동시에</strong> 처리되어 가중치 fetch가 amortize됨 → 토큰당 싸다."
+    body: "사용자가 보낸 prompt (예: 1 만 토큰) 를 한 번에 모델에 통과시켜 첫 출력 토큰을 만들 준비를 하는 단계. 모든 토큰이 <strong>동시에</strong> 처리되어 가중치 fetch 비용이 amortize 되므로, 토큰당 비용이 낮음."
   },
   "decode": {
     title: "Decode",
-    body: "한 번에 한 토큰씩 생성. 매 토큰마다 가중치 전체를 다시 fetch해야 해서 비쌈. 출력 토큰이 입력 토큰보다 5-10배 비싼 이유."
+    body: "한 번에 한 토큰씩 생성하는 단계. 매 토큰마다 가중치 전체를 다시 fetch 해야 하므로 토큰당 비용이 높음. 출력 토큰이 입력 토큰보다 5-10 배 비싼 이유."
   },
   "prompt caching": {
     title: "Prompt Caching",
-    body: "같은 prefix가 반복되는 요청에서, 이전에 계산해 둔 KV cache를 재사용. cache hit은 cache miss보다 ~10배 쌈."
+    body: "같은 prefix 가 반복되는 요청에서, 이전에 계산해 두었던 KV cache 를 재사용하는 기능. cache hit 은 cache miss 보다 약 10 배 저렴."
   },
   "context length": {
     title: "Context Length",
-    body: "모델이 한 번에 보는 토큰 수의 한계 (예: 200K). KV cache 메모리에 비례해 비용/지연이 증가."
+    body: "모델이 한 번에 볼 수 있는 토큰 수의 한계 (예: 200K). KV cache 메모리에 비례해 비용과 지연이 증가."
   },
   "context window": {
     title: "Context Window",
-    body: "Context length의 다른 표현. 200K = 약 150,000 단어 ≈ 책 한 권."
+    body: "Context length 의 다른 표현. 200K 토큰 ≈ 약 15 만 단어 ≈ 두꺼운 책 한 권 분량."
   },
 
   // ===== 학습 / 스케일링 =====
   "pretraining": {
     title: "Pretraining",
-    body: "모델의 첫 학습 단계. 인터넷에서 수집한 거대 텍스트로 \"다음 토큰 예측\". 6 × 가중치 × 토큰수 의 FLOPs."
+    body: "모델의 첫 번째 학습 단계. 인터넷에서 모은 거대한 양의 텍스트로 \"다음 토큰 예측\" 을 반복. FLOPs 비용은 대략 6 × 가중치 수 × 학습 토큰 수."
   },
   "RL": {
     title: "Reinforcement Learning (RL)",
-    body: "Pretraining 이후, 모델이 직접 응답을 생성해 점수를 받고 개선되는 학습. \"reasoning\" 모델의 핵심. 비용이 pretraining만큼 큼."
+    body: "Pretraining 이후 모델이 직접 응답을 생성하고 그 결과로 점수를 받아 가중치를 갱신하는 학습 단계. \"reasoning\" 모델의 핵심. 총 비용이 pretraining 에 맞먹을 정도로 큼."
   },
   "Chinchilla": {
     title: "Chinchilla Scaling Law",
-    body: "DeepMind 2022 논문이 제안한 \"compute-optimal\" 비율: 모델 1개 파라미터당 ~20 토큰 학습. 이 비율을 깨면 \"over-training\"."
+    body: "DeepMind 2022 논문이 제시한 \"compute-optimal\" 비율: 모델 파라미터 1 개당 약 20 개 토큰으로 학습. 이 비율을 크게 넘기면 \"over-training\"."
   },
   "compute optimal": {
     title: "Compute-Optimal",
-    body: "주어진 학습 FLOPs 예산에서 가장 좋은 모델을 만드는 (모델크기, 데이터양) 조합. Chinchilla가 제시한 분배."
+    body: "주어진 학습 FLOPs 예산에서 가장 좋은 모델을 만드는 (모델 크기, 데이터 양) 조합. Chinchilla 가 제시한 배합."
   },
   "over-training": {
     title: "Over-training",
-    body: "Chinchilla 권고보다 훨씬 더 많은 토큰으로 학습. 학습 비용은 늘지만 모델이 작게 유지되어 <strong>추론 비용이 싸짐</strong>. 추론 횟수가 많을수록 합리적."
+    body: "Chinchilla 권고치보다 훨씬 많은 토큰으로 학습하는 것. 학습 비용은 늘지만 모델 사이즈가 작게 유지되어 <strong>평생 추론 비용이 줄어듦</strong>. 추론 횟수가 많을수록 합리적."
   },
   "scaling laws": {
     title: "Scaling Laws",
-    body: "모델 크기, 데이터량, 학습 compute가 늘면 성능이 어떻게 변하는지 정리한 경험식. Kaplan(2020), Chinchilla(2022)가 대표적."
+    body: "모델 크기, 데이터 양, 학습 compute 가 늘면 성능이 어떻게 변하는지를 정리한 경험식. Kaplan (2020), Chinchilla (2022) 가 대표적."
   },
 
   // ===== 영상 인물 =====
   "Reiner Pope": {
     title: "Reiner Pope",
-    body: "MatX(LLM 전용 칩 스타트업) CEO. 전 Google, JAX와 TPU 기반 LLM 서빙 작업. 이 영상의 \"강사\"."
+    body: "LLM 전용 칩 스타트업 MatX 의 CEO. 그 전에는 Google 에서 JAX 와 TPU 기반의 LLM 서빙 인프라를 만들었음. 이 영상의 \"강사\" 역할."
   },
   "Dwarkesh": {
     title: "Dwarkesh Patel",
-    body: "기술/AI/경제 인터뷰 팟캐스트 진행자. 이 에피소드는 평소 인터뷰 형식이 아닌 \"칠판 강의\" 포맷."
+    body: "기술 / AI / 경제 인터뷰 팟캐스트 진행자. 이 에피소드는 평소의 인터뷰 형식이 아닌 \"칠판 강의\" 포맷으로 진행됨."
   },
   "Ilya": {
     title: "Ilya Sutskever",
-    body: "OpenAI 공동창업자, 현 SSI(Safe Superintelligence) 창업자. \"As we now know, pipelining is not wise\"라는 발언이 영상에서 인용됨."
+    body: "OpenAI 공동창업자, 현 SSI (Safe Superintelligence) 창업자. \"As we now know, pipelining is not wise\" 라는 그의 발언이 영상에서 인용됨."
   },
 
   // ===== 수식 등장 단어들 =====
   "rematerialization": {
     title: "Rematerialization (remat)",
-    body: "메모리에 저장 안 한 값을 필요할 때 다시 계산. KV cache miss 시에는 prompt 전체를 forward로 다시 돌려 KV를 만듦 (비쌈)."
+    body: "메모리에 저장해 두지 않은 값을 필요할 때 다시 계산하는 일. KV cache miss 가 나면 prompt 전체를 forward 로 다시 돌려 KV 를 새로 만들어야 함 (비용이 큼)."
   },
   "amortize": {
     title: "Amortize",
-    body: "비싼 비용을 여러 사용자/단위에 \"분할 상환\". 가중치 한 번 fetch를 N명에게 나누면 토큰당 비용은 1/N."
+    body: "비싼 비용을 여러 사용자 / 단위에 나눠 부담시키는 것 (분할 상환). 가중치 한 번 fetch 비용을 N 명의 사용자가 나눠 가지면 토큰당 비용이 1/N 로 줄어듦."
   },
   "balance point": {
     title: "Balance Point",
-    body: "두 비용(예: 계산 시간, 메모리 시간)이 같아지는 지점. 보통 그 근처에서 합이 최소가 되어 최적 운영점이 됨."
+    body: "두 비용 (예: 계산 시간과 메모리 시간) 이 같아지는 지점. 보통 그 근처에서 두 비용의 합이 최소가 되어 최적 운영점이 됨."
   },
   "inflection point": {
     title: "Inflection Point",
-    body: "그래프의 \"꺾이는\" 지점. Gemini가 200K 토큰에서 가격을 올린 건 그 지점에서 비용 곡선 기울기가 바뀌었다는 신호."
+    body: "그래프의 \"꺾이는\" 지점. Gemini 가 200K 토큰에서 가격을 올린 것은 바로 그 지점에서 비용 곡선의 기울기가 바뀐다는 신호."
   },
   "FLOP utilization": {
     title: "FLOP Utilization",
-    body: "GPU의 이론 FLOP/s 중 실제 사용된 비율. 100%이면 \"compute bound\" 상태. 추론은 보통 30~50%로 \"memory bound\"."
+    body: "GPU 의 이론적인 최대 FLOP/s 중 실제 사용된 비율. 100% 면 \"compute bound\" 상태. 추론은 보통 30~50% 정도로 \"memory bound\" 상태에 머묾."
   }
 };
 
