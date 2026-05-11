@@ -270,290 +270,290 @@ const GLOSSARY = {
 const QUIZZES = {
   module1: [
     {
-      q: "추론(inference) 시 GPU가 매 토큰마다 HBM에서 가져와야 하는 두 가지는?",
+      q: "추론 시 GPU가 매 토큰마다 HBM↔코어로 끌어오는 \"큰 데이터\" 두 가지는?",
       options: [
-        "가중치(weights)와 KV cache",
-        "가중치와 학습 데이터",
-        "임베딩과 활성화 함수",
-        "사용자 토큰과 프롬프트"
+        "가중치와 KV cache",
+        "가중치와 사용자 임베딩 행렬",
+        "KV cache와 attention 점수 행렬",
+        "Active params와 total params"
       ],
       correct: 0,
-      why: "추론에서 HBM↔코어 전송의 주된 항목 두 개입니다. 가중치는 모든 사용자가 공유, KV cache는 사용자(시퀀스)마다 따로. 학습 데이터는 추론과 무관."
+      why: "가중치는 모든 사용자가 공유하는 행렬, KV cache는 사용자별 단기 기억 — 둘 다 HBM에 상주하며 매 토큰마다 코어로 끌려옴. 임베딩 테이블은 \"가중치의 한 부분\"이므로 별도 자료가 아니고, attention 점수는 매 단계 즉석에서 계산되어 저장하지 않음. Active/total params는 같은 가중치를 보는 두 관점일 뿐 별개 데이터가 아님."
     },
     {
-      q: "\"forward pass\"를 가장 잘 설명한 것은?",
+      q: "Forward pass의 정의로 가장 정확한 것은?",
       options: [
-        "입력으로부터 출력을 한 번 계산하는 과정",
-        "가중치를 업데이트하는 학습 과정",
-        "데이터를 디스크에서 GPU로 옮기는 과정",
-        "사용자에게 응답 패킷을 전송하는 과정"
+        "Prompt 전체를 한 번에 처리해 첫 토큰을 준비하는 'prefill'의 다른 이름",
+        "한 토큰을 만든 뒤 그 결과로 가중치를 작게 갱신하는 과정",
+        "모델의 모든 layer를 병렬로 동시 실행해 latency를 줄이는 기법",
+        "입력을 모델 모든 layer에 순차적으로 통과시켜 출력 한 단계를 만드는 과정"
       ],
-      correct: 0,
-      why: "forward pass = 입력 → layer 통과 → 출력. 가중치 업데이트는 backward pass(학습에서만)."
+      correct: 3,
+      why: "Forward pass는 \"한 토큰을 만드는 한 사이클\". prefill (긴 prompt 처리) 도, decode (한 토큰씩 생성) 도 모두 forward pass의 형태이지 prefill만 가리키지 않음. 가중치 갱신은 backward (학습)에서만. Layer는 잔차 연결로 정보가 흘러야 하니 병렬 동시 실행이 아닌 순차."
     }
   ],
   module2: [
     {
-      q: "Roofline 분석이 말하는 핵심은?",
+      q: "Roofline 분석이 LLM 추론에 대해 알려주는 핵심은?",
       options: [
-        "계산 시간과 메모리 시간 중 더 느린 게 항상 병목이다",
-        "GPU는 항상 100% 사용률로 돌아간다",
-        "메모리가 항상 병목이다",
-        "더 빠른 GPU를 사면 항상 빨라진다"
+        "한 작업 시간 = compute time + memory time 의 합으로 결정",
+        "어떤 작업이든 'arithmetic intensity (ops/byte)'에 따라 compute-bound 또는 memory-bound가 됨",
+        "LLM 추론은 어떤 batch size에서도 항상 memory-bound",
+        "GPU 세대마다 메모리 대역폭이 두 배씩 늘어 곧 무시 가능"
       ],
-      correct: 0,
-      why: "어떤 작업이든 \"피크 계산력\"과 \"데이터 전송 한계\" 둘 중 더 작은 쪽에 묶임. LLM 추론은 자주 메모리 쪽에 묶이지만 \"항상\"은 아님 — 그게 batch가 흥미로운 이유."
+      correct: 1,
+      why: "한 사이클 시간은 max(compute, memory) 이지 합이 아님. 같은 GPU도 batch / arithmetic intensity 에 따라 compute-bound와 memory-bound 사이를 오감 — \"항상 memory-bound\"는 단순화된 오해. FLOPs/bandwidth ≈ 300 비율이 세대를 거쳐도 안정적이라 메모리 대역폭이 더 빨리 늘지도 않음."
     },
     {
-      q: "B100은 ~4.5 PFLOP/s, ~8 TB/s. 1MB짜리 작은 가중치를 GPU에 올려서 한 번 곱하면 어느 쪽이 병목?",
+      q: "B100 (~4.5 PFLOP/s, ~8 TB/s) 에서 \"1MB 가중치를 끌어와 한 번씩만 곱하기\" 시나리오. 둘 중 더 큰 시간은?",
       options: [
-        "메모리 (가져오는 시간이 계산 시간보다 훨씬 큼)",
-        "계산",
-        "두 개가 정확히 같음",
-        "GPU 코어 수"
+        "두 시간 모두 OS overhead에 가려져 무시 가능",
+        "곱셈 시간 (메모리는 PCIe로 충분히 빨라서)",
+        "메모리 fetch 시간 (곱셈은 거의 즉시)",
+        "두 시간이 거의 같음 (균형점)"
       ],
-      correct: 0,
-      why: "1MB 가중치로 할 수 있는 계산은 ~수십만 FLOPs (sub-microsecond), 가져오는 데는 1MB / 8TB/s = 125 nanoseconds. 계산이 훨씬 짧으니 \"메모리 대기\"가 주범. 이래서 \"가중치 한 번 fetch에 더 많은 일을 시키자\" = batching이 강력."
+      correct: 2,
+      why: "1MB 데이터로 한 번씩만 곱하면 ops/byte 가 매우 낮음 (가져오는 시간 ≈ 125 ns, 곱셈은 sub-nanosecond). 명백한 memory-bound 영역. 두 시간이 균형을 이루는 건 ops/byte 가 ~300 (FLOPs/bandwidth) 부근일 때만. GPU는 PCIe 가 아닌 HBM (8 TB/s) 사용."
     }
   ],
   module3: [
     {
-      q: "Batch size를 1에서 2400으로 늘리면 토큰당 비용이 가장 줄어드는 주된 이유는?",
+      q: "Batch size를 1에서 2,400으로 늘리면 토큰당 비용이 떨어지는 1차 원인은?",
       options: [
-        "가중치를 1번 읽어서 2400명에게 같이 적용 가능",
-        "더 빠른 GPU가 자동 활성화됨",
-        "메모리 용량이 2400배 커짐",
-        "사용자 수가 줄어듦"
+        "가중치 한 번 fetch가 2,400명 사용자에게 amortize 됨",
+        "KV cache가 자동으로 압축되어 메모리 사용량 감소",
+        "GPU 코어가 더 많이 활성화되어 throughput 자동 증가",
+        "Sparsity가 커져 active params가 자동 감소"
       ],
       correct: 0,
-      why: "가중치 fetch는 \"누가 쓰든 한 번\". batch=1이면 그 비용이 한 명 토큰에 다 실리고, batch=2400이면 1/2400. 이게 \"batching이 1000배 경제\"의 정체."
+      why: "가중치는 사용자 모두가 공유 → N명에 분할 상환되어 토큰당 가중치 비용 1/N 이 됨. KV는 오히려 사용자별로 따로 늘어남 (압축 X). 코어 활성화나 sparsity 는 모델 정의 사항이지 batch와 무관."
     },
     {
-      q: "Batch size를 무한정 늘려도 안 되는 이유는?",
+      q: "Batch를 무한정 늘릴 수 없는 이유는?",
       options: [
-        "사용자마다 KV cache가 따로 늘어 메모리/대역폭이 한계",
-        "가중치 메모리가 사용자 수에 비례해 늘어남",
-        "네트워크 비용이 폭증",
-        "모델 정확도가 떨어짐"
+        "Batch가 커질수록 모델 정확도가 떨어지므로",
+        "GPU 클럭이 batch에 반비례해 자동 감소하므로",
+        "가중치 행렬을 batch마다 N번 복제해 메모리에 올려야 하므로",
+        "사용자별 KV cache가 누적되어 결국 메모리 / 대역폭 한계 도달"
       ],
-      correct: 0,
-      why: "KV cache는 시퀀스마다 별도. 사용자가 1000명이면 KV 메모리도 1000배. 어느 순간 KV fetch가 가중치 fetch를 압도해 \"더 늘려도 토큰당 비용이 안 떨어짐\"."
+      correct: 3,
+      why: "가중치는 한 번만 올리면 됨 (모든 사용자 공유, batch에 비례해 늘지 않음). 진짜 한계는 KV: 사용자 N명이면 KV 도 N배. 어느 시점에서 KV fetch가 가중치 fetch를 압도해 토큰당 비용이 다시 올라감. 정확도 / 클럭 자동 변화는 이 맥락에 없음."
     }
   ],
   module4: [
     {
-      q: "FLOPs/Memory bandwidth ≈ 300 이라는 비율이 GPU 세대를 거쳐도 안정적인 가장 큰 이유는?",
+      q: "FLOPs/bandwidth ≈ 300 이 GPU 세대 (A100 → H100 → B100) 에 걸쳐 거의 안 변하는 가장 큰 이유는?",
       options: [
-        "계산 코어와 메모리 둘 다 같은 칩의 transistor 자원을 두고 경쟁",
-        "Nvidia가 의도적으로 그렇게 설계",
-        "양자역학적 한계",
-        "우연히 그런 값"
+        "Nvidia가 의도적으로 그런 product positioning 을 유지",
+        "계산 코어와 HBM 이 같은 die 의 transistor / 면적 / 전력을 두고 경쟁하므로",
+        "ML 워크로드의 평균 arithmetic intensity 가 마침 300이라 시장이 거기 맞춤",
+        "양자역학적 transistor 밀도 한계 때문"
       ],
-      correct: 0,
-      why: "둘 다 실리콘 면적과 전력을 먹고, 같은 fab 공정을 공유. 한 쪽이 빨라지면 다른 쪽도 비례해 빨라지지 않으면 균형이 안 맞음. 그래서 비율이 크게 안 변함 — 결과적으로 \"최적 batch size\" 공식이 단순해짐."
+      correct: 1,
+      why: "둘 다 같은 fab 공정과 die 면적을 공유. 한쪽만 비대해지면 비용 효율이 무너지므로 시장이 자연스럽게 균형을 강제. Nvidia 가격 정책이나 워크로드 통계가 결정한 게 아닌, 칩 설계 경제학에서 떨어지는 자연 결과."
     },
     {
-      q: "DeepSeek가 256개 expert 중 32개를 활성화한다. 균형점에서의 batch size는?",
+      q: "DeepSeek (256 expert 중 32 활성). 균형 batch size 는?",
       options: [
-        "약 2,400 (= 300 × 8)",
-        "약 300",
-        "약 9,600",
-        "약 150"
+        "약 300 (sparsity 무관, 그냥 마법의 숫자)",
+        "약 9,600 (= 300 × 32, active expert 수)",
+        "약 2,400 (= 300 × 8, sparsity)",
+        "약 150 (= 300 / 2, 안전 마진)"
       ],
-      correct: 0,
-      why: "Sparsity = total/active = 256/32 = 8. 최적 batch ≈ 300 × sparsity = 2400. 'Active params에서 본 균형점이 sparsity 만큼 늘어남' 이라는 직관이 핵심."
+      correct: 2,
+      why: "Sparsity = total/active = 256/32 = 8. 공식: batch_optimal ≈ 300 × sparsity = 2,400. \"sparsity\" 가 \"active expert 수\" 자체와 다르다는 점에 주의 (active=32 라도 sparsity=8 은 \"32개로 256개를 대표\"한다는 비율)."
     }
   ],
   module5: [
     {
-      q: "MoE에서 router의 역할은?",
+      q: "MoE에서 router가 하는 일은?",
       options: [
-        "각 토큰을 어떤 expert(들)에게 보낼지 결정",
-        "모든 expert의 결과를 그냥 평균함",
-        "GPU 사이의 네트워크 트래픽을 관리",
-        "학습 시에만 사용되는 보조 모듈"
+        "토큰의 임베딩을 보고 어떤 expert(들)에게 보낼지와 그 가중치를 결정",
+        "모든 expert의 출력을 단순 평균 후 다음 layer로 전달",
+        "학습 시에만 동작, 추론 시에는 모든 expert가 균등하게 동작",
+        "GPU 사이의 NVLink 트래픽 경로 결정"
       ],
       correct: 0,
-      why: "Router는 작은 신경망 layer. 토큰 임베딩을 받아 \"이 토큰은 expert 7과 32에게 점수가 가장 높음\" 같은 결정을 함."
+      why: "Router는 모델 안의 작은 신경망 layer (보통 linear + softmax). 토큰 임베딩 → top-k expert 와 각각의 가중치를 출력. 결과를 모은 뒤 router 가 정한 가중치로 합침 (단순 평균 X). 추론에서도 동일. 데이터센터 라우팅과는 무관."
     },
     {
-      q: "Active parameters와 Total parameters의 차이는?",
+      q: "어떤 모델의 active params 가 100B, total params 가 800B 다. Sparsity 와 시스템에 주는 함의는?",
       options: [
-        "Active = 한 토큰을 처리할 때 실제 쓰이는 가중치 수, Total = 모든 expert 합",
-        "Active = 학습된 가중치, Total = 미학습 포함",
-        "Active = GPU에 올린 것, Total = 디스크에 있는 것",
-        "둘은 같은 개념"
+        "Sparsity = 700B (= 800 - 100). 추가 파라미터의 양",
+        "Sparsity = 8. 메모리에는 800B 모두 상주, 토큰당 계산은 100B 분량",
+        "Sparsity = 0.125 (= 100/800). 100B 만 GPU 에 올리고 나머지는 SSD",
+        "Sparsity = 1.25. 메모리 / 계산 비율"
       ],
-      correct: 0,
-      why: "MoE는 모델 전체(Total)는 거대하지만, 토큰 하나가 실제로 통과하는 가중치(Active)는 일부. 추론 비용은 Active에 비례, 메모리 점유는 Total에 비례."
+      correct: 1,
+      why: "Sparsity 정의 = total / active = 800/100 = 8. 어떤 expert로 갈지 미리 모르니 모든 expert 가중치를 HBM 에 상주시켜야 함 (SSD 로드는 latency 가 너무 큼). 계산은 토큰이 통과하는 active 만큼만."
     }
   ],
   module6: [
     {
-      q: "Scale-up과 Scale-out의 차이는?",
+      q: "GPU 인프라 맥락에서 scale-up 과 scale-out 의 차이는?",
       options: [
-        "Scale-up = 랙 안 NVLink (빠름), Scale-out = 랙 사이 이더넷 (~8배 느림)",
-        "Scale-up = 더 큰 GPU 1개, Scale-out = 작은 GPU 여러 개",
         "Scale-up = 학습용, Scale-out = 추론용",
-        "둘은 같은 표현"
+        "Scale-up 은 Nvidia 전용 용어, Scale-out 은 AMD 전용",
+        "Scale-up = GPU 1개의 성능 향상, Scale-out = GPU 수 늘리기 (그 외 의미 없음)",
+        "Scale-up = 한 rack 안의 NVLink 연결 (~1×), Scale-out = rack 사이 데이터센터 ethernet (~1/8×)"
       ],
-      correct: 0,
-      why: "한 랙 안에서는 NVLink로 GPU들이 거의 \"옆 메모리\"처럼 통신. 랙을 넘으면 데이터센터 이더넷으로 떨어져 대역폭이 급감. \"한 랙에 다 들어갔으면 좋겠다\"는 모든 분산 의사결정의 출발점."
+      correct: 3,
+      why: "이 문맥에서는 \"한 빠른 통신 도메인 안 (scale-up)\" vs \"도메인 사이 (scale-out)\" 의 분리가 핵심. C 는 일반 IT 의 vertical / horizontal scaling 정의로 비슷하긴 하지만, LLM 분산 결정의 본질은 \"NVLink 도메인 안인가 밖인가\"."
     },
     {
-      q: "Hopper 8 GPU → Blackwell 72 → Rubin ~500 으로 한 scale-up 도메인이 커진다. 진짜 기술적 한계는?",
+      q: "Hopper (트레이 8 GPU) → Blackwell (랙 72) → Rubin (~500) 으로 한 scale-up 도메인이 커지는 데 가장 빡빡한 물리적 한계는?",
       options: [
-        "케이블 밀도와 backplane 연결자",
-        "전력 공급",
-        "GPU 가격",
-        "Nvidia의 마케팅 결정"
+        "랙 가격 (조달 한계)",
+        "데이터센터 온도 (냉각 한계)",
+        "케이블 / backplane 연결자 핀 밀도",
+        "전력 공급 (랙당 100kW)"
       ],
-      correct: 0,
-      why: "GPU끼리 모두 직접 연결하려면 케이블이 천문학적으로 많아짐. 케이블 굵기 × 곡률 × 커넥터 핀 밀도가 물리적 한계. Hopper→Blackwell은 폼팩터 변경(트레이→랙)이 컸고, Blackwell→Rubin은 케이블 밀도 진짜 4배 향상."
+      correct: 2,
+      why: "전력 / 냉각 / 가격 모두 제약이지만 가장 빡빡한 건 GPU끼리 직접 연결할 때 필요한 물리적 와이어 수와 connector 핀 밀도. Blackwell → Rubin 의 \"진짜 4×\" 향상은 케이블 밀도와 backplane 설계의 진보."
     }
   ],
   module7: [
     {
-      q: "Pipeline parallelism이 의미하는 것은?",
+      q: "Pipeline parallelism의 정의는?",
       options: [
-        "모델 layer를 여러 GPU/랙에 나눠 배치, 활성화를 다음으로 넘김",
-        "같은 데이터를 여러 GPU에서 동시에 복제 처리",
-        "여러 모델을 동시에 서빙",
-        "학습 데이터를 분할"
+        "모델 layer 를 stage 로 나눠 다른 GPU(또는 rack)에 배치하고 활성화를 다음 stage 로 전달",
+        "같은 layer 를 여러 GPU 에 복제해 throughput 을 N배로",
+        "한 layer 안의 행렬을 쪼개 여러 GPU 에서 병렬 곱셈",
+        "학습 데이터를 N개로 나눠 GPU별로 다른 batch 처리"
       ],
       correct: 0,
-      why: "Pipeline = 공장 컨베이어처럼 layer 0~25는 rack 0, 26~50은 rack 1 ... 토큰이 layer를 따라 다음 랙으로 이동."
+      why: "Pipeline 은 \"layer 분할\" 이 본질. B 는 data parallelism 의 추론 변형, C 는 tensor parallelism, D 는 학습용 data parallelism. 셋 다 자주 혼동됨."
     },
     {
-      q: "8-active-experts × 8-layers-per-stage × 2 ≥ 8 부등식이 의미하는 바는?",
+      q: "MoE 모델에서 부등식 \"8 × active expert 수 × layer/stage ≥ 8\" 이 시사하는 바는?",
       options: [
-        "랙 안 (scale-up) 통신이 랙 사이 (scale-out) 통신보다 충분히 무거워서 pipeline이 손해 안 봄",
-        "Pipeline은 항상 비효율적",
-        "MoE는 pipeline과 호환 안 됨",
-        "Batch size를 줄여야 함"
+        "Pipeline stage 당 layer 가 너무 많으면 항상 손해",
+        "Scale-up 안에서 도는 통신량이 충분히 커서 cross-rack 페널티가 잘 가려짐 → pipeline 추가가 손해 안 됨",
+        "Stage 를 8개로 나눠야만 pipeline 이 가능",
+        "활성 expert 가 8개일 때만 pipeline 적용 가능"
       ],
-      correct: 0,
-      why: "Scale-out은 ~8배 느림. 랙 안에서 도는 통신량이 \"랙 사이로 보내는 데이터\"의 8배 이상이면, scale-out 시간은 scale-up 시간에 가려져 추가 비용 거의 무시 가능."
+      correct: 1,
+      why: "좌변 = \"rack 안에서 도는 통신량\" (커야 좋음), 우변 = \"rack 사이 보내는 데이터의 8배 페널티\". 좌변이 우변의 8배 이상이면 cross-rack 비용이 묻혀서 pipeline 이 손해 안 봄. 특정 stage 수나 expert 수를 강제하는 게 아님."
     }
   ],
   module8: [
     {
-      q: "KV cache가 토큰마다 따로 저장되는 이유는?",
+      q: "KV cache 가 토큰마다 따로 저장되는 진짜 이유는?",
       options: [
-        "다음 토큰을 만들 때 이전 모든 토큰의 K, V를 다시 계산하지 않으려고",
-        "사용자별 가중치를 따로 두려고",
-        "학습 데이터를 영구 저장하려고",
-        "보안 격리 때문"
+        "사용자별로 별도 가중치를 두기 위해",
+        "보안을 위해 사용자 데이터를 격리",
+        "다음 학습에 쓸 데이터를 보존하기 위해",
+        "새 토큰 생성 시 이전 토큰들의 K, V 를 매번 다시 forward 하지 않으려고 (O(N²) → O(N))"
       ],
-      correct: 0,
-      why: "Self-attention은 새 토큰이 이전 모든 토큰과 \"내적\"을 함. 매번 prompt 전체를 다시 forward 하면 N²이지만, K, V를 캐시해 두면 N으로 떨어짐."
+      correct: 3,
+      why: "Attention 은 새 토큰의 query 가 이전 모든 토큰의 K 와 내적, V 의 가중합. 매번 prompt 전체를 다시 forward 하면 N² 비용. K, V 를 캐시해 두면 새 토큰은 자기 K, V 만 새로 계산하고 캐시된 것과 곱하기만 하면 됨."
     },
     {
-      q: "bytes_per_token ≈ 2KB 인 모델에서, 200K 컨텍스트를 가진 한 사용자의 KV cache 총 크기는?",
+      q: "bytes_per_token ≈ 2KB 모델에서, 한 사용자가 200K 컨텍스트를 사용할 때 그 사람만의 KV cache 총 크기는?",
       options: [
-        "약 400 MB",
+        "약 200 KB",
         "약 40 MB",
-        "약 4 GB",
-        "약 200 KB"
+        "약 400 MB",
+        "약 4 GB"
       ],
-      correct: 0,
-      why: "2KB × 200,000 = 400 MB. 사용자 1000명이면 400 GB → 한 GPU의 HBM(~192GB)에 안 들어감. 그래서 분산이 필요."
+      correct: 2,
+      why: "2 KB × 200,000 = 400 MB. 1,000명 동시 사용이면 400 GB → 한 GPU HBM (~192 GB) 을 훨씬 초과. 분산과 메모리 압박의 진짜 출처."
     }
   ],
   module9: [
     {
-      q: "추론에서 pipelining이 latency(첫 토큰 시간)을 줄이지 못하는 이유는?",
+      q: "추론에서 pipeline 을 추가해도 한 토큰의 latency 가 줄지 않는 가장 정확한 이유는?",
       options: [
-        "어차피 한 토큰을 만들려면 모든 layer를 순차적으로 통과해야 함",
-        "GPU가 너무 느려서",
-        "사용자가 너무 많아서",
-        "메모리가 부족해서"
+        "KV cache 압박이 항상 latency 를 결정하므로 layer 분배는 의미 없음",
+        "한 토큰의 forward 는 모든 layer 를 순차 통과해야 하므로 critical path 깊이가 그대로 (게다가 rack 간 hop 지연 추가)",
+        "GPU 사이의 PCIe 가 너무 느려서",
+        "Latency 는 batch size 에 비례 결정되므로"
       ],
-      correct: 0,
-      why: "Pipeline은 처리량(throughput)에 도움이 될 수 있지만 한 토큰의 critical path는 layer 수만큼 길어. 한 랙에 다 있으나 4개 랙에 흩어져 있으나 한 토큰 시간은 비슷, 오히려 랙 간 hop 지연으로 더 늘 수도."
+      correct: 1,
+      why: "Pipeline 은 throughput 에 도움될 수 있지만 한 forward 의 critical path 깊이 (= layer 수 × layer 당 시간) 는 그대로. 거기에 rack-to-rack hop 지연 (~ms) 이 추가됨. KV 는 throughput 에 영향, GPU 간은 PCIe 가 아닌 NVLink, batch 와 latency 는 직접 관계가 약함."
     },
     {
-      q: "KV cache 메모리에서 pipeline 단계 수 P가 \"상쇄된다\"는 의미는?",
+      q: "\"Pipeline 단계 P 를 늘려도 GPU 당 KV cache 가 줄지 않는다\" 의 가장 정확한 메커니즘은?",
       options: [
-        "P를 늘리면 GPU 수가 늘어 batch도 비례해 늘려야 GPU가 안 놀고, 그래서 GPU당 KV는 그대로",
-        "Pipeline이 자동으로 KV를 압축",
-        "P=1이 항상 최적",
-        "KV는 P와 무관하게 작아짐"
+        "P 배 늘어난 GPU 를 안 놀게 하려면 in-flight sequence 도 P배 늘려야 → GPU 당 KV = (B×P)/(E×P) = B/E 로 P 가 약분",
+        "KV cache 가 자동으로 P 배 압축되기 때문",
+        "KV 는 P=1 일 때만 정의되는 개념이므로",
+        "모든 GPU 가 KV 의 사본을 따로 갖기 때문"
       ],
       correct: 0,
-      why: "가중치는 P 단계로 나누면 GPU당 1/P. 하지만 KV는 시퀀스마다 따로고, P배 늘어난 GPU를 채우려면 시퀀스도 P배 → GPU당 KV는 (B×P)/(E×P) = B/E. P가 분자/분모에서 사라짐."
+      why: "가중치는 P 단계 분할로 1/P 로 줄음. 그러나 KV 는 시퀀스별 자료라 GPU 가 늘면 batch 도 늘려야 GPU 가 안 놂 — P 가 분자/분모 양쪽에 등장해 약분됨. 결과적으로 GPU 당 KV 부담은 그대로. 자동 압축이나 사본 복제와는 무관."
     }
   ],
   module10: [
     {
-      q: "Chinchilla가 권하는 토큰:파라미터 비율은 대략?",
+      q: "Chinchilla 가 제시한 토큰 : 파라미터 비율은?",
       options: [
-        "20:1 (파라미터 1개당 토큰 20개)",
-        "1:1",
-        "100:1",
-        "1:20"
+        "약 1 : 20 (파라미터 1당 0.05 토큰)",
+        "약 5 : 1",
+        "약 100 : 1",
+        "약 20 : 1"
       ],
-      correct: 0,
-      why: "DeepMind의 2022 논문. \"compute-optimal\" 학습은 파라미터 1당 약 20 토큰. 이를 깨고 더 학습하면 \"over-training\"."
+      correct: 3,
+      why: "DeepMind 2022 Chinchilla 논문. compute-optimal 학습 = 파라미터 1당 약 20 토큰. 70B 모델 → ~1.4T 토큰. 이 비율을 깨고 더 많은 토큰으로 학습하는 게 \"over-training\"."
     },
     {
-      q: "현재 frontier 모델이 Chinchilla의 100배로 over-train 되는 이유로 가장 합리적인 것은?",
+      q: "현재 frontier 모델이 Chinchilla 의 ~100배로 over-train 되는 가장 합리적인 경제학적 이유는?",
       options: [
-        "모델은 한번 학습돼서 평생 추론을 하므로, 작고 잘 학습된 모델이 총 비용을 줄임",
-        "Chinchilla 논문이 틀린 것으로 밝혀져서",
-        "학습 데이터가 무한하니까 그냥 더 씀",
-        "Nvidia가 학습 시간을 길게 쓰라고 시켜서"
+        "Pretraining 데이터가 인터넷에 무제한이라 그냥 더 많이 사용",
+        "후속 연구로 Chinchilla 원래 논문이 부정됨",
+        "평생 추론량이 매우 커서, 모델 사이즈를 줄이고 학습을 늘리면 평생 추론 비용이 크게 줄어 총 비용 ↓",
+        "큰 모델이 안전성 평가에 통과하기 어려워서"
       ],
-      correct: 0,
-      why: "추론을 하루 수십억 번 하니까, 모델 사이즈를 줄여 추론 비용을 깎는 게 학습을 더 길게 하는 비용보다 훨씬 이득. 비용 균등화: \"학습 == 추론 == RL\" 근처가 최적."
+      correct: 2,
+      why: "비용 균등화 휴리스틱: 학습 ≈ RL ≈ 평생 추론. 모델 사이즈에 ~선형으로 비싸지는 평생 추론 쪽을 줄이는 것이, 학습을 더 길게 하는 비용보다 큰 이득. A 는 효율을 무시한 단순 논리, B 는 사실 아님, D 는 무관."
     }
   ],
   module11: [
     {
-      q: "Gemini가 ~200K 컨텍스트에서 가격을 50% 올리는 이유의 가장 합리적인 설명은?",
+      q: "Gemini 가 ~200K 컨텍스트에서 가격을 50% 올리는 가장 합리적인 운영적 설명은?",
       options: [
-        "그 지점에서 KV cache 메모리 fetch 시간이 계산 시간을 추월해 같은 batch로 처리 못 함",
-        "200K가 데이터의 절대적 한계",
-        "단순한 마케팅",
-        "그 길이 이상은 더 좋은 GPU가 필요"
+        "단순 마케팅 (200K 가 깔끔한 숫자라서)",
+        "그 지점부터 KV cache fetch 시간이 가중치/계산 시간을 추월 → 같은 batch 가 메모리 한도 초과 → batch 줄여야 → 토큰당 비용 ↑",
+        "200K 이상은 더 비싼 차세대 GPU 에서만 처리",
+        "200K 이상은 fallback 모델로 우회 처리"
       ],
-      correct: 0,
-      why: "긴 컨텍스트에서는 KV fetch가 빠르게 늘어나(B×L 형태) 어느 순간 가중치 fetch를 압도. 그 지점에서 batch를 줄여야 GPU가 메모리 한도를 안 넘김 → 토큰당 비용 ↑. 50% 인상은 그 \"꺾이는 지점\"이 200K 근처임을 시사."
+      correct: 1,
+      why: "KV 는 컨텍스트 L 에 비례해 fetch 비용 증가. 어느 지점에서 가중치 fetch 시간을 추월하고, 그때부터 같은 batch 로는 GPU 메모리 한도를 넘김 → batch 를 줄여 처리 → amortization 효과 ↓ → 토큰당 비용 ↑. 50% 인상은 그 inflection point 부근의 운영 비용을 그대로 반영하는 신호."
     },
     {
-      q: "Cache hit이 cache miss보다 ~10배 싼 이유는?",
+      q: "API 의 cache hit 이 cache miss 보다 ~10배 싼 이유는?",
       options: [
-        "HBM에서 KV를 읽는 비용이, 같은 KV를 만들기 위해 prompt 전체를 forward 다시 돌리는 비용보다 훨씬 작음",
-        "Cache는 무료라서",
-        "Hit 시 GPU가 꺼지므로 전기 요금이 줄어들어서",
-        "사용자 수가 자동으로 줄어들어서"
+        "Cache miss = prompt 전체 forward 다시 (≈ prefill 한 번), Cache hit = HBM 에서 KV 만 read → 작업량 ~10배 차이",
+        "Cache 는 무료 저장소라 비용 0",
+        "Cache hit 시 GPU 가 절전 모드로 진입해 전기료 1/10",
+        "Cache hit 인 사용자는 자동으로 우선순위가 낮아져 늦게 처리"
       ],
       correct: 0,
-      why: "Cache miss = 사실상 prefill 다시 함 (모델 전체 forward). Cache hit = 이미 만들어진 KV를 HBM에서 끌어오기. 후자가 ~10배 적은 작업. 이게 prompt caching의 경제 원리."
+      why: "Forward pass 비용 vs HBM read 비용의 차이가 약 10배. 이게 prompt caching 가격 할인의 진짜 출처. Cache 자체에도 저장 / 대역폭 비용은 들고, 우선순위 / 절전과는 무관."
     }
   ],
   module12: [
     {
-      q: "다음 중 \"한 랙(scale-up) 안에 모든 게 들어가는 것이 좋다\"는 결론의 가장 정확한 근거는?",
+      q: "\"Frontier 추론은 거의 항상 단일 scale-up 도메인 안에서 한다\" 결론을 가장 정확히 뒷받침하는 논리는?",
       options: [
-        "All-to-all 통신이 빠르고, KV cache 대역폭에는 pipeline이 도움이 안 됨",
-        "한 GPU만 쓰는 게 항상 가장 빠르다",
-        "모델은 늘 작기 때문",
-        "Pipeline parallelism은 항상 잘못된 선택"
+        "Pipeline parallelism 이 이론적으로 작동하지 않기 때문",
+        "한 GPU 만 쓰는 게 항상 가장 빠르기 때문",
+        "Frontier 모델이 항상 작아서 한 GPU 에 들어가기 때문",
+        "MoE 의 all-to-all 이 scale-up 안에서만 빠르고, KV cache 대역폭은 pipeline 단계 P 가 약분되어 줄지 않으므로 → 단일 도메인 안이 최선"
       ],
-      correct: 0,
-      why: "MoE는 all-to-all → scale-up 도메인 안에서만 빠름. 그리고 KV cache 대역폭은 pipeline으로 해결 안 됨 (P 상쇄). 두 결론이 합쳐져 \"frontier 추론은 거의 항상 단일 scale-up\"."
+      correct: 3,
+      why: "두 결론이 합쳐져 frontier 의 결정을 만듦. MoE 는 scale-up 안에서 all-to-all 이 효율적. KV 대역폭은 P 약분으로 pipeline 효과 X. 가능하면 단일 scale-up 안에서 expert + 약간의 tensor parallelism 으로 끝냄. Pipeline 은 가중치가 한 도메인 HBM 합을 초과할 때만."
     },
     {
-      q: "어떤 모델의 active params가 절반이 됐지만 sparsity는 그대로다. 최적 batch size는?",
+      q: "어떤 모델의 sparsity 는 그대로지만 active params 만 절반이 됐다. 균형 batch size 는?",
       options: [
-        "그대로 (300 × sparsity 만 결정)",
-        "절반",
-        "두 배",
-        "4배"
+        "절반 (active 가 줄었으므로)",
+        "두 배 (모델이 가벼워져 더 많이 batch 가능)",
+        "그대로 (균형 batch ≈ 300 × sparsity, active 는 식에 등장하지 않음)",
+        "4배 (active 1/2 × 활용도 2배)"
       ],
-      correct: 0,
-      why: "공식: batch_size_optimal ≈ 300 × sparsity. 여기에 active params는 등장하지 않음. 양변에서 잘 약분해서 \"하드웨어 비율 × 모델 sparsity\"만 남기 때문."
+      correct: 2,
+      why: "균형 공식 도출 과정에서 active params 가 양변에서 약분됨. 남는 건 \"하드웨어 비율 (300) × 모델 sparsity\". Active 변화는 batch 결정 자체에는 영향 없음 (단, latency / throughput 절댓값에는 영향)."
     }
   ]
 };
